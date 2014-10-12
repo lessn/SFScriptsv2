@@ -221,7 +221,7 @@ namespace SFKatarina
                 if (W.IsReady() && Player.Distance(target) < W.Range)
                     W.Cast();
             }
-            if (R.IsReady() && Player.Distance(target) < R.Range)
+            if (R.IsReady() && Player.Distance(target) < (R.Range - 200))
                         R.Cast();
                     
                     
