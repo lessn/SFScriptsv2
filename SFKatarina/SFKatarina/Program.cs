@@ -1,6 +1,6 @@
-﻿using System.Globalization;
+﻿
 
-#region References
+        #region References
 
 // It was working like 30 seconds ago, i reverted code changes and it didnt fix it
 using LeagueSharp;
@@ -9,6 +9,7 @@ using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Globalization;
 
 // By iSnorflake
 namespace SFKatarina
@@ -181,6 +182,7 @@ namespace SFKatarina
             if (!Orbwalking.CanMove(40)) return;
 
             var allMinions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range);
+            var allJungle = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range);
             var useQ = Config.Item("useQW").GetValue<bool>();
             var useW = Config.Item("useWW").GetValue<bool>();
             if (useQ && Q.IsReady())
@@ -281,16 +283,46 @@ namespace SFKatarina
                 {
                     foreach (Obj_AI_Base esc in ObjectManager.Get<Obj_AI_Base>())
                     {
-                        if (esc.IsAlly && esc.Distance(ObjectManager.Player) <= E.Range && Vector2.Distance(Game.CursorPos.To2D(), esc.ServerPosition.To2D()) <= 100)
+                        if (esc.IsAlly && esc.Distance(ObjectManager.Player) <= E.Range &&
+                            Vector2.Distance(Game.CursorPos.To2D(), esc.ServerPosition.To2D()) <= 100)
                         {
 
                             E.CastOnUnit(esc);
 
                         }
+                        else
+                        {
+                            var ward = FindBestWardItem();
+                            if (ward != null)
+                            {
+                                ward.UseItem(Game.CursorPos);
+                            }
+                        }
 
                     }
                 }
             }
+        }
+        #endregion
+
+        #region Ward jump stuff
+
+        private static SpellDataInst GetItemSpell(InventorySlot invSlot)
+        {
+            return ObjectManager.Player.Spellbook.Spells.FirstOrDefault(spell => (int)spell.Slot == invSlot.Slot + 4);
+        }
+        private static InventorySlot FindBestWardItem()
+        {
+            InventorySlot slot = Items.GetWardSlot();
+            if (slot == default(InventorySlot)) return null;
+
+            SpellDataInst sdi = GetItemSpell(slot);
+
+            if (sdi != default(SpellDataInst) && sdi.State == SpellState.Ready)
+            {
+                return slot;
+            }
+            return null;
         }
         #endregion
 
