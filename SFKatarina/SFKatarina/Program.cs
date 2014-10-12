@@ -1,4 +1,6 @@
-﻿#region References
+﻿using System.Globalization;
+
+#region References
 
 // It was working like 30 seconds ago, i reverted code changes and it didnt fix it
 using LeagueSharp;
@@ -207,20 +209,21 @@ namespace SFKatarina
 
             if (GetDamage(target) > target.Health)
             {
-               if(Q.IsReady() && Player.Distance(target) < Q.Range + target.BoundingRadius)
-                   Q.CastOnUnit(target, Config.Item("QNFE").GetValue<bool>());
-               if (E.IsReady() && Player.Distance(target) < E.Range + target.BoundingRadius)
-                   Q.CastOnUnit(target, Config.Item("QNFE").GetValue<bool>());
+                if (!Player.IsChannelingImportantSpell())
+                {
+                
+                if (Q.IsReady() && Player.Distance(target) < Q.Range + target.BoundingRadius)
+                    Q.CastOnUnit(target, Config.Item("QNFE").GetValue<bool>());
+                if (E.IsReady() && Player.Distance(target) < E.Range + target.BoundingRadius)
+                    Q.CastOnUnit(target, Config.Item("QNFE").GetValue<bool>());
                 if (W.IsReady() && Player.Distance(target) < W.Range)
                     W.Cast();
-                if (R.IsReady() && Player.Distance(target) < R.Range)
-                {
-                    if (!E.IsReady() && !W.IsReady() && !Q.IsReady())
-                    {
+            }
+            if (R.IsReady() && Player.Distance(target) < R.Range)
                         R.Cast();
-                    }
                     
-                }
+                    
+                
                 
 
             }
@@ -278,7 +281,7 @@ namespace SFKatarina
                 {
                     foreach (Obj_AI_Base esc in ObjectManager.Get<Obj_AI_Base>())
                     {
-                        if (esc.IsAlly && esc.Distance(ObjectManager.Player) <= E.Range && esc != null && Vector2.Distance(Game.CursorPos.To2D(), esc.ServerPosition.To2D()) <= 100)
+                        if (esc.IsAlly && esc.Distance(ObjectManager.Player) <= E.Range && Vector2.Distance(Game.CursorPos.To2D(), esc.ServerPosition.To2D()) <= 100)
                         {
 
                             E.CastOnUnit(esc);
@@ -307,7 +310,6 @@ namespace SFKatarina
 
             if (R.IsReady())
                 damage += ObjectManager.Player.GetSpellDamage(enemy, SpellSlot.R, 1);
-            Game.PrintChat(((float)damage).ToString());
             return (float)damage;
         }
         private static bool IsEnemyInRange() // Checks if an enemy is in range of my ultimate.
