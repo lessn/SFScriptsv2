@@ -284,7 +284,7 @@ namespace SFKatarina
                     foreach (Obj_AI_Base esc in ObjectManager.Get<Obj_AI_Base>())
                     {
                         if (esc.IsAlly && esc.Distance(ObjectManager.Player) <= E.Range &&
-                            Vector2.Distance(Game.CursorPos.To2D(), esc.ServerPosition.To2D()) <= 100)
+                            Vector2.Distance(Game.CursorPos.To2D(), esc.ServerPosition.To2D()) <= 175)
                         {
 
                             E.CastOnUnit(esc);
