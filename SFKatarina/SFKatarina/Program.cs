@@ -217,7 +217,7 @@ namespace SFKatarina
                 if (Q.IsReady() && Player.Distance(target) < Q.Range + target.BoundingRadius)
                     Q.CastOnUnit(target, Config.Item("QNFE").GetValue<bool>());
                 if (E.IsReady() && Player.Distance(target) < E.Range + target.BoundingRadius)
-                    Q.CastOnUnit(target, Config.Item("QNFE").GetValue<bool>());
+                    E.CastOnUnit(target, Config.Item("QNFE").GetValue<bool>());
                 if (W.IsReady() && Player.Distance(target) < W.Range)
                     W.Cast();
             }
