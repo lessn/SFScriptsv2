@@ -214,7 +214,14 @@ namespace SFKatarina
                 if (W.IsReady() && Player.Distance(target) < W.Range)
                     W.Cast();
                 if (R.IsReady() && Player.Distance(target) < R.Range)
-                    R.Cast();
+                {
+                    if (!E.IsReady() && !W.IsReady() && !Q.IsReady())
+                    {
+                        R.Cast();
+                    }
+                    
+                }
+                
 
             }
             else
@@ -289,7 +296,7 @@ namespace SFKatarina
         {
             var damage = 0d;
 
-            if (Q.IsReady(420))
+            if (Q.IsReady())
                 damage += ObjectManager.Player.GetSpellDamage(enemy, SpellSlot.Q);
 
             if (W.IsReady())
@@ -299,7 +306,8 @@ namespace SFKatarina
                 damage += ObjectManager.Player.GetSpellDamage(enemy, SpellSlot.E);
 
             if (R.IsReady())
-                damage += ObjectManager.Player.GetSpellDamage(enemy, SpellSlot.R, 1) * 8;
+                damage += ObjectManager.Player.GetSpellDamage(enemy, SpellSlot.R, 1);
+            Game.PrintChat(((float)damage).ToString());
             return (float)damage;
         }
         private static bool IsEnemyInRange() // Checks if an enemy is in range of my ultimate.
