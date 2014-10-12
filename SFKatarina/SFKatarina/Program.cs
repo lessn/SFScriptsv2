@@ -293,9 +293,9 @@ namespace SFKatarina
                             }
 
                             else
-                            {
+                            
                                 
-                            }
+                            
                         {
                                     var ward = FindBestWardItem();
                                     if (ward != null)
