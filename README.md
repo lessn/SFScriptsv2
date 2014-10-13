@@ -6,7 +6,7 @@ SFScriptsv2
 ###SFAhri
 ![SFAhri](http://i.imgur.com/HZ1zIzv.gif)
   
-  Features:
+  ####Features:
   
   Basic combo
   
@@ -17,7 +17,7 @@ SFScriptsv2
   Easy user customability
   
   
-  Credits
+  ####Credits
   
   Snorflake
   
@@ -25,7 +25,7 @@ SFScriptsv2
 ###SFKatarina
 ![SFKatarina](http://i.imgur.com/K5UItRb.gif)
 
-  Features:
+  ####Features:
   
   Perfect Combo
   
@@ -36,7 +36,7 @@ SFScriptsv2
   Easily customizable
   
 
-  Credits:
+  ####Credits:
   
   Snorflake - Making it
   
