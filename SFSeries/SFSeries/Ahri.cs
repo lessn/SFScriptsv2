@@ -1,4 +1,21 @@
-﻿
+﻿/*
+ *   _________________________  .__          .__ 
+ *  /   _____/\_   _____/  _  \ |  |_________|__|
+ *  \_____  \  |    __)/  /_\  \|  |  \_  __ \  |
+ *  /        \ |     \/    |    \   Y  \  | \/  |
+ * /_______  / \___  /\____|__  /___|  /__|  |__|
+ *         \/      \/         \/     \/          
+ * 
+ * Features:
+ * Basic combo
+ * Best prodiction.
+ * Lag-free circles.
+ * Easy user customability
+ * 
+ * Credits
+ * Snorflake
+ * 
+ */
 #region References
 
 using LeagueSharp;
@@ -52,13 +69,11 @@ namespace SFSeries
             Sf.SubMenu("Combo").AddItem(new MenuItem("useQ", "Use Q?").SetValue(true));
             Sf.SubMenu("Combo").AddItem(new MenuItem("useW", "Use W?").SetValue(true));
             Sf.SubMenu("Combo").AddItem(new MenuItem("useE", "Use E?").SetValue(true));
-            Sf.SubMenu("Combo").AddItem(new MenuItem("ComboActive", "Combo").SetValue(new KeyBind(32, KeyBindType.Press)));
             var harras = new Menu("Harras", "Harras");
             harras.AddItem(new MenuItem("useQH", "Use Q?").SetValue(true));
-            harras.AddItem(new MenuItem("HarrasActive", "Harras").SetValue(new KeyBind("C".ToCharArray()[0], KeyBindType.Press)));
             Sf.AddSubMenu(harras);
             //Exploits
-            Sf.AddItem(new MenuItem("NFE", "No-Face (Normal cast not implemented)").SetValue(true));
+            Sf.AddItem(new MenuItem("NFE", "No-Face").SetValue(false));
             //Make the menu visible
             Sf.AddToMainMenu();
 
@@ -74,13 +89,15 @@ namespace SFSeries
         #region OnGameUpdate
         static void Game_OnGameUpdate(EventArgs args)
         {
-            if (Sf.Item("ComboActive").GetValue<KeyBind>().Active)
+            switch (Orbwalker.ActiveMode)
             {
-                Combo();
-            }
-            if (Sf.Item("HarrasActive").GetValue<KeyBind>().Active)
-            {
-                Harras();
+                case Orbwalking.OrbwalkingMode.Combo:
+                    Combo();
+                    break;
+                case Orbwalking.OrbwalkingMode.Mixed:
+                    Harras();
+                    break;
+               
             }
         }
         #endregion
@@ -97,25 +114,13 @@ namespace SFSeries
         public static void Combo()
         {
             // Game.PrintChat("Got to COMBO function");
-            var target = SimpleTs.GetTarget(E.Range, SimpleTs.DamageType.Magical);
+            var target = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Magical);
             if (target == null) return;
 
 
             if (target.IsValidTarget(Q.Range) && Q.IsReady())
             {
-                if (Sf.Item("NFE").GetValue<bool>())
-                {
-                    //Game.PrintChat("Casting Q");
-                    //Spell_Cast_LineSkillshot("Combo", "useQ", Q, SimpleTs.DamageType.Magical);
-                    Q.Cast(target, true);
-                    //Game.PrintChat("Q Casted");
-                }
-
-                else
-                {
-                    //Spell_Cast_LineSkillshot("Combo", "useQ", Q, SimpleTs.DamageType.Magical);
-                    Q.Cast(target, true);
-                }
+                Q.Cast(target, Sf.Item("NFE").GetValue<bool>());
             }
             if (target.IsValidTarget(W.Range) && W.IsReady())
             {
@@ -123,15 +128,7 @@ namespace SFSeries
             }
             if (target.IsValidTarget(E.Range) & E.IsReady())
             {
-                if (Sf.Item("NFE").GetValue<bool>())
-                {
-                    //Spell_Cast_LineSkillshot("Combo", "useE", E, SimpleTs.DamageType.Magical,"Enemy",true);
-                    E.Cast(target, true);
-                }
-                else
-                {
-                    E.Cast(target, true);
-                }
+                E.Cast(target, Sf.Item("NFE").GetValue<bool>());
             }
 
         }
