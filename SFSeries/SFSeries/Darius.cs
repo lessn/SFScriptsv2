@@ -91,7 +91,7 @@ namespace SFSeries
 
         private static void Harras()
         {
-            var target = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical);
+            var target = SimpleTs.GetTarget(E.Range, SimpleTs.DamageType.Physical);
             if (target == null) return;
 
             if (Q.IsReady() && _player.Distance(target) < Q.Range + target.BoundingRadius)
@@ -110,7 +110,7 @@ namespace SFSeries
 
         private static void Combo()
         {
-            var target = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Physical);
+            var target = SimpleTs.GetTarget(E.Range, SimpleTs.DamageType.Physical);
             if (target == null) return;
 
             if (Q.IsReady() && _player.Distance(target) < Q.Range + target.BoundingRadius)

@@ -114,7 +114,7 @@ namespace SFSeries
         public static void Combo()
         {
             // Game.PrintChat("Got to COMBO function");
-            var target = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Magical);
+            var target = SimpleTs.GetTarget(E.Range, SimpleTs.DamageType.Magical);
             if (target == null) return;
 
 
