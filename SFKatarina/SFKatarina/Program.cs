@@ -1,19 +1,18 @@
-﻿using Color = System.Drawing.Color;
+﻿
 
-#region References
-
-// It was working like 30 seconds ago, i reverted code changes and it didnt fix it
+        #region References
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Color = System.Drawing.Color;
 
 // By iSnorflake
 namespace SFKatarina
 {
-    internal class Program // How the fuck??
+    internal class Program 
     {
 
 #endregion
@@ -33,10 +32,10 @@ namespace SFKatarina
 
         //Menu
         public static Menu Config;
-        private static Obj_AI_Hero Player;
+        private static Obj_AI_Hero _player;
 
 
-        private static void Main(string[] args)
+        private static void Main()
         {
             CustomEvents.Game.OnGameLoad += Game_OnGameLoad;
         }
@@ -46,8 +45,8 @@ namespace SFKatarina
         private static void Game_OnGameLoad(EventArgs args)
         {
 
-            Player = ObjectManager.Player;
-            if (Player.BaseSkinName != ChampionName) return;
+            _player = ObjectManager.Player;
+            if (_player.BaseSkinName != ChampionName) return;
             Q = new Spell(SpellSlot.Q, 675);
             W = new Spell(SpellSlot.W, 375);
             E = new Spell(SpellSlot.E, 700);
@@ -126,7 +125,7 @@ namespace SFKatarina
         #region OnGameUpdate
         private static void Game_OnGameUpdate(EventArgs args)
         {
-            if (Player.IsDead) return;
+            if (_player.IsDead) return;
             if (IsEnemyInRange()) // If an enemy is in range and im ultimating - dont cancel the ult before their dead
                 if (ObjectManager.Player.IsChannelingImportantSpell()) return;
             if (!IsEnemyInRange() && ObjectManager.Player.IsChannelingImportantSpell()) // If the ult isnt hitting anyone
@@ -135,12 +134,12 @@ namespace SFKatarina
             }
             Orbwalker.SetAttacks(true);
             Orbwalker.SetMovement(true);
-            var useQKS = Config.Item("KillstealQ").GetValue<bool>() && Q.IsReady();
+            var useQks = Config.Item("KillstealQ").GetValue<bool>() && Q.IsReady();
             if (Config.Item("ComboActive").GetValue<KeyBind>().Active)
             {
                 Combo();
             }
-            if (useQKS)
+            if (useQks)
                 Killsteal();
             if (Config.Item("FreezeActive").GetValue<KeyBind>().Active)
                 Farm();
@@ -161,7 +160,7 @@ namespace SFKatarina
             var useW = Config.Item("UseWFarm").GetValue<bool>();
             if (useQ && Q.IsReady())
             {
-                foreach (var minion in from minion in allMinions where minion != null where Player.Distance3D(minion) < Q.Range where Q.IsKillable(minion) select minion)
+                foreach (var minion in from minion in allMinions where minion != null where _player.Distance3D(minion) < Q.Range where Q.IsKillable(minion) select minion)
                 {
                     Q.CastOnUnit(minion);
                     return;
@@ -169,11 +168,9 @@ namespace SFKatarina
             }
             else if (useW && W.IsReady())
             {
-                if (!allMinions.Any(minion => minion.IsValidTarget(W.Range) && minion.Health < 0.75 * Player.GetSpellDamage(minion, SpellSlot.W))) return;
+                if (!allMinions.Any(minion => minion.IsValidTarget(W.Range) && minion.Health < 0.75 * _player.GetSpellDamage(minion, SpellSlot.W))) return;
 
                 W.Cast();
-                return;
-
             }
         }
         #endregion
@@ -184,7 +181,7 @@ namespace SFKatarina
             if (!Orbwalking.CanMove(40)) return;
 
             var allMinions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range);
-            var allJungle = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range);
+            MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range);
             var useQ = Config.Item("useQW").GetValue<bool>();
             var useW = Config.Item("useWW").GetValue<bool>();
             if (useQ && Q.IsReady())
@@ -199,7 +196,6 @@ namespace SFKatarina
             {
                 if (!allMinions.Any(minion => minion.IsValidTarget(W.Range))) return;
                 W.Cast();
-                return;
             }
         }
         #endregion
@@ -213,17 +209,17 @@ namespace SFKatarina
 
             if (GetDamage(target) > target.Health)
             {
-                if (!Player.IsChannelingImportantSpell())
+                if (!_player.IsChannelingImportantSpell())
                 {
                 
-                if (Q.IsReady() && Player.Distance(target) < Q.Range + target.BoundingRadius)
+                if (Q.IsReady() && _player.Distance(target) < Q.Range + target.BoundingRadius)
                     Q.CastOnUnit(target, Config.Item("QNFE").GetValue<bool>());
-                if (E.IsReady() && Player.Distance(target) < E.Range + target.BoundingRadius)
+                if (E.IsReady() && _player.Distance(target) < E.Range + target.BoundingRadius)
                     E.CastOnUnit(target, Config.Item("QNFE").GetValue<bool>());
-                if (W.IsReady() && Player.Distance(target) < W.Range)
+                if (W.IsReady() && _player.Distance(target) < W.Range)
                     W.Cast();
             }
-            if (R.IsReady() && Player.Distance(target) < (R.Range - 200))
+            if (R.IsReady() && _player.Distance(target) < (R.Range - 200))
                         R.Cast();
                     
                     
@@ -253,7 +249,7 @@ namespace SFKatarina
             {
                 var menuItem = Config.Item(spell.Slot + "Range").GetValue<Circle>();
                 if (menuItem.Active)
-                    Utility.DrawCircle(Player.Position, spell.Range, menuItem.Color);
+                    Utility.DrawCircle(_player.Position, spell.Range, menuItem.Color);
                 // Drawing.DrawText(playerPos[0] - 65, playerPos[1] + 20, drawUlt.Color, "Hit R To kill " + UltTarget + "!");
 
             }
@@ -266,7 +262,7 @@ namespace SFKatarina
         {
             foreach (var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(Q.Range)))
             {
-                if (Q.IsReady() && hero.Distance(ObjectManager.Player) <= Q.Range && Player.GetSpellDamage(hero, SpellSlot.Q) >= hero.Health)
+                if (Q.IsReady() && hero.Distance(ObjectManager.Player) <= Q.Range && _player.GetSpellDamage(hero, SpellSlot.Q) >= hero.Health)
                 {
                     Q.CastOnUnit(hero, Config.Item("QNFE").GetValue<bool>());
 
@@ -278,8 +274,8 @@ namespace SFKatarina
         #region Escape
         private static void Escape() // HUGE CREDITS TO FLUXY FOR FIXING THIS
         {
-            var basePos = Player.Position.To2D();
-            var newPos = (Game.CursorPos.To2D() - Player.Position.To2D());
+            var basePos = _player.Position.To2D();
+            var newPos = (Game.CursorPos.To2D() - _player.Position.To2D());
             var finalVector = basePos + (newPos.Normalized()*(560));
             if (!Config.Item("Escape").GetValue<KeyBind>().Active) return;
             ObjectManager.Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
@@ -287,7 +283,7 @@ namespace SFKatarina
             var castWard = true;
             foreach (var esc in ObjectManager.Get<Obj_AI_Base>().Where(esc => esc.Distance(ObjectManager.Player) <= E.Range).Where(esc => Vector2.Distance(Game.CursorPos.To2D(), esc.ServerPosition.To2D()) <= 175))
             {
-                E.CastOnUnit(esc);
+                E.Cast(finalVector);
                 castWard = false;
             }
             var ward = FindBestWardItem();
