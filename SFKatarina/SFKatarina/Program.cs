@@ -16,6 +16,7 @@ namespace SFKatarina
 {
     internal class Program // How the fuck??
     {
+
 #endregion
 
         #region Declares
@@ -36,6 +37,11 @@ namespace SFKatarina
         public static Menu Config;
         private static Obj_AI_Hero Player;
 
+        public Program(bool castWard)
+        {
+            this.castWard = castWard;
+        }
+
         private static void Main(string[] args)
         {
             CustomEvents.Game.OnGameLoad += Game_OnGameLoad;
@@ -52,6 +58,8 @@ namespace SFKatarina
             W = new Spell(SpellSlot.W, 375);
             E = new Spell(SpellSlot.E, 700);
             R = new Spell(SpellSlot.R, 550);
+
+           
 
             Game.PrintChat(ChampionName + " Loaded! By iSnorflake V2");
             SpellList.Add(Q);
@@ -106,7 +114,7 @@ namespace SFKatarina
             // Drawings
              Config.AddSubMenu(new Menu("Drawings", "Drawings"));
              Config.SubMenu("Drawings").AddItem(new MenuItem("QRange", "Q Range").SetValue(new Circle(true, Color.FromArgb(150, Color.DodgerBlue))));
-             Config.SubMenu("Drawings").AddItem(new MenuItem("QRange", "Q Range").SetValue(new Circle(true, Color.FromArgb(150, Color.OrangeRed))));
+             Config.SubMenu("Drawings").AddItem(new MenuItem("ERange", "E Range").SetValue(new Circle(true, Color.FromArgb(150, Color.OrangeRed))));
             Config.AddSubMenu(new Menu("Exploits", "Exploits"));
              Config.SubMenu("Exploits").AddItem(new MenuItem("QNFE", "Q No-Face").SetValue(true));
             // Config.SubMenu("Drawings").AddItem(new MenuItem("ERange", "E Range").SetValue(new Circle(true, Color.FromArgb(150, Color.DodgerBlue))));
@@ -275,37 +283,23 @@ namespace SFKatarina
         #endregion
 
         #region Escape
-        private static void Escape()
+        private void Escape()
         {
             if (Config.Item("Escape").GetValue<KeyBind>().Active)
             {
                 ObjectManager.Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
                 if (E.IsReady())
                 {
-                    foreach (Obj_AI_Base esc in ObjectManager.Get<Obj_AI_Base>())
+                    var castWard = true;
+                    foreach (Obj_AI_Base esc in ObjectManager.Get<Obj_AI_Base>().Where(esc => esc.IsAlly && esc.Distance(ObjectManager.Player) <= E.Range).Where(esc => Vector2.Distance(Game.CursorPos.To2D(), esc.ServerPosition.To2D()) <= 175))
                     {
-                        if (esc.IsAlly && esc.Distance(ObjectManager.Player) <= E.Range)
-                            if (Vector2.Distance(Game.CursorPos.To2D(), esc.ServerPosition.To2D()) <= 175)
-                            {
-
-
-                                E.CastOnUnit(esc);
-
-                            }
-
-                            else
-                            
-                                
-                            
-                        {
-                                    var ward = FindBestWardItem();
-                                    if (ward != null)
-                                    {
-                                        ward.UseItem(Game.CursorPos);
-                                    }
-                                
-                            }
-
+                        E.CastOnUnit(esc);
+                        castWard = false;
+                    }
+                    var ward = FindBestWardItem();
+                    if (ward != null && castWard)
+                    {
+                        ward.UseItem(Game.CursorPos);
                     }
                 }
             }
