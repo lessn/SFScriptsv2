@@ -9,7 +9,6 @@ using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Drawing;
 
 // By iSnorflake
 namespace SFKatarina
@@ -31,7 +30,6 @@ namespace SFKatarina
         public static Spell W;
         public static Spell E;
         public static Spell R;
-        public static Items.Item DFG;
 
         //Menu
         public static Menu Config;
@@ -163,10 +161,9 @@ namespace SFKatarina
             var useW = Config.Item("UseWFarm").GetValue<bool>();
             if (useQ && Q.IsReady())
             {
-                foreach (var minion in allMinions.Where(minion => minion.IsValidTarget() && HealthPrediction.GetHealthPrediction(minion, (int)(ObjectManager.Player.Distance(minion) * 1000 / 1400))
-                < 0.75 * ObjectManager.Player.GetSpellDamage(minion, SpellSlot.Q, 1)))
+                foreach (var minion in from minion in allMinions where minion != null where Player.Distance3D(minion) < Q.Range where Q.IsKillable(minion) select minion)
                 {
-                    Q.Cast(minion);
+                    Q.CastOnUnit(minion);
                     return;
                 }
             }
@@ -279,25 +276,24 @@ namespace SFKatarina
         #endregion
 
         #region Escape
-        private static void Escape()
+        private static void Escape() // HUGE CREDITS TO FLUXY FOR FIXING THIS
         {
-            if (Config.Item("Escape").GetValue<KeyBind>().Active)
+            var basePos = Player.Position.To2D();
+            var newPos = (Game.CursorPos.To2D() - Player.Position.To2D());
+            var finalVector = basePos + (newPos.Normalized()*(560));
+            if (!Config.Item("Escape").GetValue<KeyBind>().Active) return;
+            ObjectManager.Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
+            if (!E.IsReady()) return;
+            var castWard = true;
+            foreach (var esc in ObjectManager.Get<Obj_AI_Base>().Where(esc => esc.Distance(ObjectManager.Player) <= E.Range).Where(esc => Vector2.Distance(Game.CursorPos.To2D(), esc.ServerPosition.To2D()) <= 175))
             {
-                ObjectManager.Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
-                if (E.IsReady())
-                {
-                    var castWard = true;
-                    foreach (Obj_AI_Base esc in ObjectManager.Get<Obj_AI_Base>().Where(esc => esc.Distance(ObjectManager.Player) <= E.Range).Where(esc => Vector2.Distance(Game.CursorPos.To2D(), esc.ServerPosition.To2D()) <= 175))
-                    {
-                        E.CastOnUnit(esc);
-                        castWard = false;
-                    }
-                    var ward = FindBestWardItem();
-                    if (ward != null && castWard)
-                    {
-                        ward.UseItem(Game.CursorPos);
-                    }
-                }
+                E.CastOnUnit(esc);
+                castWard = false;
+            }
+            var ward = FindBestWardItem();
+            if (ward != null && castWard)
+            {
+                ward.UseItem(finalVector.To3D());
             }
         }
         #endregion
