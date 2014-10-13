@@ -35,8 +35,10 @@ namespace SFKatarina
         private static Obj_AI_Hero _player;
 
 
-        private static void Main()
+// ReSharper disable once UnusedParameter.Local
+        private static void Main(string[] args)
         {
+            Game.PrintChat("Main run");
             CustomEvents.Game.OnGameLoad += Game_OnGameLoad;
         }
         #endregion
@@ -44,7 +46,7 @@ namespace SFKatarina
         #region OnGameLoad
         private static void Game_OnGameLoad(EventArgs args)
         {
-
+            Game.PrintChat("Loaded 1");
             _player = ObjectManager.Player;
             if (_player.BaseSkinName != ChampionName) return;
             Q = new Spell(SpellSlot.Q, 675);
