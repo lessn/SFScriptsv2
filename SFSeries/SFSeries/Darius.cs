@@ -1,7 +1,10 @@
-﻿using LeagueSharp;
+﻿using System.Collections.Generic;
+using System.Linq;
+using LeagueSharp;
 using LeagueSharp.Common;
 using System;
-using System.Drawing;
+using SharpDX;
+using Color = System.Drawing.Color;
 
 namespace SFSeries
 {
@@ -83,9 +86,25 @@ namespace SFSeries
                     Combo();
                     break;
                 case Orbwalking.OrbwalkingMode.Mixed:
-
                     Harras();
                     break;
+                case Orbwalking.OrbwalkingMode.LaneClear:
+                    LaneClear();
+                    break;
+            }
+        }
+
+        private static void LaneClear()
+        {
+            if (!Orbwalking.CanMove(40)) return;
+
+            var allMinions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range);
+            var useQ = Config.Item("useQW").GetValue<bool>();
+            var useW = Config.Item("useWW").GetValue<bool>();
+            if (useQ && Q.IsReady())
+            {
+                if (!allMinions.Any(minion => minion.IsValidTarget(Q.Range))) return;
+                Q.Cast();
             }
         }
 
