@@ -278,8 +278,9 @@ namespace SFKatarina
             var basePos = _player.Position.To2D();
             var newPos = (Game.CursorPos.To2D() - _player.Position.To2D());
             var finalVector = basePos + (newPos.Normalized()*(560));
+            var movePos = basePos + (newPos.Normalized()*(100));
             if (!Config.Item("Escape").GetValue<KeyBind>().Active) return;
-            ObjectManager.Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
+            ObjectManager.Player.IssueOrder(GameObjectOrder.MoveTo, movePos.To3D());
             if (!E.IsReady()) return;
             var castWard = true;
             foreach (var esc in ObjectManager.Get<Obj_AI_Base>().Where(esc => esc.Distance(ObjectManager.Player) <= E.Range))
