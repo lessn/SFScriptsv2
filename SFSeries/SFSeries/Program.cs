@@ -11,14 +11,16 @@ namespace SFSeries
 {
     class Program
     {
-        public static string ChampionName ;
+        public static string ChampionName;
         static void Main(string[] args)
         {
+            Game.PrintChat("Main loaded");
             CustomEvents.Game.OnGameLoad += Game_OnGameLoad;
         }
 
         static void Game_OnGameLoad(EventArgs args)
         {
+            Game.PrintChat("OnGameLoad");
             ChampionName = ObjectManager.Player.BaseSkinName;
 
             switch (ChampionName)

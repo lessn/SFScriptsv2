@@ -40,12 +40,12 @@ namespace SFSeries
 
         public Ahri()
         {
-            CustomEvents.Game.OnGameLoad += Game_OnGameLoad;
+            Game_OnGameLoad();
         }
         #endregion
 
         #region OnGameLoad
-        static void Game_OnGameLoad(EventArgs args)
+        static void Game_OnGameLoad()
         {
             if (Player.BaseSkinName != Name) return;
 

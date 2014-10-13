@@ -56,12 +56,13 @@ namespace SFSeries
         // ReSharper disable once UnusedParameter.Local
         public Katarina()
         {
-            CustomEvents.Game.OnGameLoad += Game_OnGameLoad;
+            Game.PrintChat("Katarina loaded");
+            Game_OnGameLoad();
         }
         #endregion
 
         #region OnGameLoad
-        static void Game_OnGameLoad(EventArgs args)
+        static void Game_OnGameLoad()
         {
             Game.PrintChat("Loaded 1");
             _player = ObjectManager.Player;
