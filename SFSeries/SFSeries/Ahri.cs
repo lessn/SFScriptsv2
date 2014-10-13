@@ -56,7 +56,7 @@ namespace SFSeries
             Q.SetSkillshot(0.50f, 100f, 1100f, false, SkillshotType.SkillshotLine);
             E.SetSkillshot(0.50f, 60f, 1200f, true, SkillshotType.SkillshotLine);
             //Base menu
-            Sf = new Menu("SFAhri", Name, true);
+            Sf = new Menu("SFSeries", "SFSeries", true);
             //Orbwalker and menu
             Sf.AddSubMenu(new Menu("Orbwalker", "Orbwalker"));
             Orbwalker = new Orbwalking.Orbwalker(Sf.SubMenu("Orbwalker"));

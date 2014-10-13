@@ -40,7 +40,7 @@ namespace SFSeries
 
             Game.PrintChat("Darius Loaded! By iSnorflake V2");
             //Create the menu
-            Config = new Menu("Darius", "Darius", true);
+            Config = new Menu("SFSeries", "SFSeries", true);
 
             //Orbwalker submenu
             Config.AddSubMenu(new Menu("Orbwalking", "Orbwalking"));

@@ -77,7 +77,7 @@ namespace SFSeries
             SpellList.Add(E);
             SpellList.Add(R);
             //Create the menu
-            Config = new Menu("Katarina", "Katarina", true);
+            Config = new Menu("SFSeries", "SFSeries", true);
 
             //Orbwalker submenu
             Config.AddSubMenu(new Menu("Orbwalking", "Orbwalking"));
