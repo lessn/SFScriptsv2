@@ -29,6 +29,9 @@ namespace SFSeries
                 case "Katarina":
                     new Katarina();
                     break;
+                case "Darius":
+                    new Darius();
+                    break;
                 default:
                     Game.PrintChat("This champion is not supported by SFSeries");
                     break;
