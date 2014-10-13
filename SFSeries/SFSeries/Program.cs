@@ -1,38 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿#region
+
+using System;
 using LeagueSharp;
 using LeagueSharp.Common;
 
+#endregion
+
 namespace SFSeries
 {
-    partial class Program
+    internal class Program
     {
-        public static string ChampionName;
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            CustomEvents.Game.OnGameLoad +=Game_OnGameLoad;
-        }
 
-        private static void Game_OnGameLoad(EventArgs args)
-        {
-            ChampionName = ObjectManager.Player.ChampionName;
-
-            switch (ChampionName)
+            CustomEvents.Game.OnGameLoad += a =>
             {
-                case "Ahri":
-                    new Ahri();
-                    break;
-                case "Katarina":
-                    new Katarina();
-                    break;
-                default:
-                    Game.PrintChat("Champion not supported by SFSeries");
-                    break;
-                    
-            }
+                try
+                {
+                    var type = Type.GetType("SFSeries." + ObjectManager.Player.ChampionName);
+
+                    if (type != null)
+                    {
+                        Activator.CreateInstance(type);
+                        return;
+                    }
+
+                    Game.PrintChat(ObjectManager.Player.ChampionName + " not supported");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+            };
         }
     }
 }
