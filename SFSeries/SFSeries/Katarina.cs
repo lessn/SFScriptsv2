@@ -165,7 +165,18 @@ namespace SFSeries
                 WaveClear();
             }
             Escape();
+            AlwaysW();
         }
+
+        private static void AlwaysW()
+        {
+            if (!W.IsReady()) return;
+            foreach (var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(W.Range)))
+            {
+                W.Cast();
+            }
+        }
+
         #endregion
 
         #region Farm
@@ -276,15 +287,12 @@ namespace SFSeries
         #region Killsteal
         private static void Killsteal() // Creds to TC-Crew
         {
-            foreach (var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(Q.Range)))
+            foreach (var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(Q.Range)).Where(hero => Q.IsReady() && hero.Distance(ObjectManager.Player) <= Q.Range && _player.GetSpellDamage(hero, SpellSlot.Q) >= hero.Health))
             {
-                if (Q.IsReady() && hero.Distance(ObjectManager.Player) <= Q.Range && _player.GetSpellDamage(hero, SpellSlot.Q) >= hero.Health)
-                {
-                    Q.CastOnUnit(hero, Config.Item("QNFE").GetValue<bool>());
-
-                }
+                Q.CastOnUnit(hero, Config.Item("QNFE").GetValue<bool>());
             }
         }
+
         #endregion
 
         #region Escape
