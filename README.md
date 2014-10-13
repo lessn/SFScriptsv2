@@ -25,6 +25,17 @@ SFScriptsv2
 ###SFKatarina
 ![SFKatarina](http://i.imgur.com/K5UItRb.gif)
 
+  Features:
+  
+  Perfect Combo
+  
+  Pentakill functionality (Ult canceling)
+  
+  Spell farm
+  
+  Easily customizable
+  
+
   Credits:
   
   Snorflake - Making it
