@@ -1,37 +1,35 @@
-﻿#region
-
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using System.Threading.Tasks;
 using LeagueSharp;
 using LeagueSharp.Common;
 
-#endregion
-
 namespace SFSeries
 {
-    internal class Program
+    class Program
     {
-        private static void Main(string[] args)
+        public static string ChampionName ;
+        static void Main(string[] args)
         {
+            CustomEvents.Game.OnGameLoad += Game_OnGameLoad;
+        }
 
-            CustomEvents.Game.OnGameLoad += a =>
+        static void Game_OnGameLoad(EventArgs args)
+        {
+            ChampionName = ObjectManager.Player.BaseSkinName;
+
+            switch (ChampionName)
             {
-                try
-                {
-                    var type = Type.GetType("SFSeries." + ObjectManager.Player.ChampionName);
-
-                    if (type != null)
-                    {
-                        Activator.CreateInstance(type);
-                        return;
-                    }
-
-                    Game.PrintChat(ObjectManager.Player.ChampionName + " not supported");
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                }
-            };
+                case "Ahri":
+                    new Ahri();
+                    break;
+                case "Katarina":
+                    new Katarina();
+                    break;
+            }
         }
     }
 }

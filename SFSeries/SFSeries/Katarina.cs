@@ -6,6 +6,12 @@
  * /_______  / \___  /  |____|__ (____  /__| (____  /__|  |__|___|  (____  /
  *         \/      \/           \/    \/          \/              \/     \/ 
  * 
+ * Features:
+ * Perfect Combo
+ * Pentakill functionality (Ult canceling)
+ * Spell farm
+ * Easily customizable
+ * 
  * Credits:
  * Snorflake - Making it
  * Fluxy - Re-writing ward jump & Teaching me about vectors and movement packets
