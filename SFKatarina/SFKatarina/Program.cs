@@ -37,10 +37,6 @@ namespace SFKatarina
         public static Menu Config;
         private static Obj_AI_Hero Player;
 
-        public Program(bool castWard)
-        {
-            this.castWard = castWard;
-        }
 
         private static void Main(string[] args)
         {
@@ -283,7 +279,7 @@ namespace SFKatarina
         #endregion
 
         #region Escape
-        private void Escape()
+        private static void Escape()
         {
             if (Config.Item("Escape").GetValue<KeyBind>().Active)
             {
@@ -291,7 +287,7 @@ namespace SFKatarina
                 if (E.IsReady())
                 {
                     var castWard = true;
-                    foreach (Obj_AI_Base esc in ObjectManager.Get<Obj_AI_Base>().Where(esc => esc.IsAlly && esc.Distance(ObjectManager.Player) <= E.Range).Where(esc => Vector2.Distance(Game.CursorPos.To2D(), esc.ServerPosition.To2D()) <= 175))
+                    foreach (Obj_AI_Base esc in ObjectManager.Get<Obj_AI_Base>().Where(esc => esc.Distance(ObjectManager.Player) <= E.Range).Where(esc => Vector2.Distance(Game.CursorPos.To2D(), esc.ServerPosition.To2D()) <= 175))
                     {
                         E.CastOnUnit(esc);
                         castWard = false;
