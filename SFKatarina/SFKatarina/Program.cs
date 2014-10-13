@@ -283,7 +283,7 @@ namespace SFKatarina
             var castWard = true;
             foreach (var esc in ObjectManager.Get<Obj_AI_Base>().Where(esc => esc.Distance(ObjectManager.Player) <= E.Range).Where(esc => Vector2.Distance(Game.CursorPos.To2D(), esc.ServerPosition.To2D()) <= 175))
             {
-                E.Cast(finalVector);
+                E.Cast(finalVector.To3D());
                 castWard = false;
             }
             var ward = FindBestWardItem();
