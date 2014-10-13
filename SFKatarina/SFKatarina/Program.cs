@@ -1,6 +1,17 @@
-﻿
+﻿/*
+ *  ________________________  __.       __               .__               
+ * /   _____/\_   _____/    |/ _|____ _/  |______ _______|__| ____ _____   
+ * \_____  \  |    __) |      < \__  \\   __\__  \\_  __ \  |/    \\__  \  
+ * /        \ |     \  |    |  \ / __ \|  |  / __ \|  | \/  |   |  \/ __ \_
+ * /_______  / \___  /  |____|__ (____  /__| (____  /__|  |__|___|  (____  /
+ *         \/      \/           \/    \/          \/              \/     \/ 
+ * 
+ * Credits:
+ * Snorflake - Making it
+ * Fluxy - Re-writing ward jump & Teaching me about vectors and movement packets
+ * */
 
-        #region References
+#region References
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
