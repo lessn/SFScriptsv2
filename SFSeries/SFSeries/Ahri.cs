@@ -148,18 +148,6 @@ namespace SFSeries
         }
         #endregion
 
-        #region GetDamage
-        private static double GetDamage(Obj_AI_Base unit) // Credit to TC-Crew and PQMailer for the base of this 
-        {
-            double damage = 0;
-            if (Q.IsReady()) damage += Player.GetSpellDamage(unit, SpellSlot.Q);
-            if (W.IsReady()) damage += Player.GetSpellDamage(unit, SpellSlot.W);
-            if (E.IsReady()) damage += Player.GetSpellDamage(unit, SpellSlot.E);
-            return damage;
-
-        }
-        #endregion
-
     }
 
 }

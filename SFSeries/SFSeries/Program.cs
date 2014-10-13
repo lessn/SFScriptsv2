@@ -8,7 +8,7 @@ using LeagueSharp.Common;
 
 namespace SFSeries
 {
-    class Program
+    partial class Program
     {
         public static string ChampionName;
         static void Main(string[] args)
@@ -22,8 +22,11 @@ namespace SFSeries
 
             switch (ChampionName)
             {
-                case  "Ahri":
+                case "Ahri":
                     new Ahri();
+                    break;
+                case "Katarina":
+                    new Katarina();
                     break;
             }
         }

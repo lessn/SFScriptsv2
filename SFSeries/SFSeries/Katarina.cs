@@ -11,25 +11,26 @@
  * Fluxy - Re-writing ward jump & Teaching me about vectors and movement packets
  * */
 
+using Color = System.Drawing.Color;
+
 #region References
+
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Color = System.Drawing.Color;
 
 // By iSnorflake
-namespace SFKatarina
+namespace SFSeries
 {
-    internal class Program 
+    internal class Katarina
     {
 
 #endregion
 
         #region Declares
-        public static string ChampionName = "Katarina";
 
         //Orbwalker instance
         public static Orbwalking.Orbwalker Orbwalker;
@@ -46,34 +47,32 @@ namespace SFKatarina
         private static Obj_AI_Hero _player;
 
 
-// ReSharper disable once UnusedParameter.Local
-        private static void Main(string[] args)
+        // ReSharper disable once UnusedParameter.Local
+        public Katarina()
         {
-            Game.PrintChat("Main run");
             CustomEvents.Game.OnGameLoad += Game_OnGameLoad;
         }
         #endregion
 
         #region OnGameLoad
-        private static void Game_OnGameLoad(EventArgs args)
+        static void Game_OnGameLoad(EventArgs args)
         {
             Game.PrintChat("Loaded 1");
             _player = ObjectManager.Player;
-            if (_player.BaseSkinName != ChampionName) return;
             Q = new Spell(SpellSlot.Q, 675);
             W = new Spell(SpellSlot.W, 375);
             E = new Spell(SpellSlot.E, 700);
             R = new Spell(SpellSlot.R, 550);
 
-           
 
-            Game.PrintChat(ChampionName + " Loaded! By iSnorflake V2");
+
+            Game.PrintChat("Katarina Loaded! By iSnorflake V2");
             SpellList.Add(Q);
             SpellList.Add(W);
             SpellList.Add(E);
             SpellList.Add(R);
             //Create the menu
-            Config = new Menu(ChampionName, ChampionName, true);
+            Config = new Menu("Katarina", "Katarina", true);
 
             //Orbwalker submenu
             Config.AddSubMenu(new Menu("Orbwalking", "Orbwalking"));
@@ -118,11 +117,11 @@ namespace SFKatarina
             Config.SubMenu("Misc").AddItem(new MenuItem("Escape", "Escape").SetValue(new KeyBind("G".ToCharArray()[0], KeyBindType.Press)));
 
             // Drawings
-             Config.AddSubMenu(new Menu("Drawings", "Drawings"));
-             Config.SubMenu("Drawings").AddItem(new MenuItem("QRange", "Q Range").SetValue(new Circle(true, Color.FromArgb(150, Color.DodgerBlue))));
-             Config.SubMenu("Drawings").AddItem(new MenuItem("ERange", "E Range").SetValue(new Circle(true, Color.FromArgb(150, Color.OrangeRed))));
+            Config.AddSubMenu(new Menu("Drawings", "Drawings"));
+            Config.SubMenu("Drawings").AddItem(new MenuItem("QRange", "Q Range").SetValue(new Circle(true, Color.FromArgb(150, Color.DodgerBlue))));
+            Config.SubMenu("Drawings").AddItem(new MenuItem("ERange", "E Range").SetValue(new Circle(true, Color.FromArgb(150, Color.OrangeRed))));
             Config.AddSubMenu(new Menu("Exploits", "Exploits"));
-             Config.SubMenu("Exploits").AddItem(new MenuItem("QNFE", "Q No-Face").SetValue(true));
+            Config.SubMenu("Exploits").AddItem(new MenuItem("QNFE", "Q No-Face").SetValue(true));
             // Config.SubMenu("Drawings").AddItem(new MenuItem("ERange", "E Range").SetValue(new Circle(true, Color.FromArgb(150, Color.DodgerBlue))));
 
             Config.AddToMainMenu();
@@ -223,20 +222,20 @@ namespace SFKatarina
             {
                 if (!_player.IsChannelingImportantSpell())
                 {
-                
-                if (Q.IsReady() && _player.Distance(target) < Q.Range + target.BoundingRadius)
-                    Q.CastOnUnit(target, Config.Item("QNFE").GetValue<bool>());
-                if (E.IsReady() && _player.Distance(target) < E.Range + target.BoundingRadius)
-                    E.CastOnUnit(target, Config.Item("QNFE").GetValue<bool>());
-                if (W.IsReady() && _player.Distance(target) < W.Range)
-                    W.Cast();
-            }
-            if (R.IsReady() && _player.Distance(target) < (R.Range - 200))
-                        R.Cast();
-                    
-                    
-                
-                
+
+                    if (Q.IsReady() && _player.Distance(target) < Q.Range + target.BoundingRadius)
+                        Q.CastOnUnit(target, Config.Item("QNFE").GetValue<bool>());
+                    if (E.IsReady() && _player.Distance(target) < E.Range + target.BoundingRadius)
+                        E.CastOnUnit(target, Config.Item("QNFE").GetValue<bool>());
+                    if (W.IsReady() && _player.Distance(target) < W.Range)
+                        W.Cast();
+                }
+                if (R.IsReady() && _player.Distance(target) < (R.Range - 200))
+                    R.Cast();
+
+
+
+
 
             }
             else
@@ -288,8 +287,8 @@ namespace SFKatarina
         {
             var basePos = _player.Position.To2D();
             var newPos = (Game.CursorPos.To2D() - _player.Position.To2D());
-            var finalVector = basePos + (newPos.Normalized()*(560));
-            var movePos = basePos + (newPos.Normalized()*(100));
+            var finalVector = basePos + (newPos.Normalized() * (560));
+            var movePos = basePos + (newPos.Normalized() * (100));
             if (!Config.Item("Escape").GetValue<KeyBind>().Active) return;
             ObjectManager.Player.IssueOrder(GameObjectOrder.MoveTo, movePos.To3D());
             if (!E.IsReady()) return;
