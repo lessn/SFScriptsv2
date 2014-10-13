@@ -1,6 +1,6 @@
-﻿
+﻿using Color = System.Drawing.Color;
 
-        #region References
+#region References
 
 // It was working like 30 seconds ago, i reverted code changes and it didnt fix it
 using LeagueSharp;
@@ -9,7 +9,7 @@ using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Globalization;
+using System.Drawing;
 
 // By iSnorflake
 namespace SFKatarina
@@ -104,8 +104,9 @@ namespace SFKatarina
             Config.SubMenu("Misc").AddItem(new MenuItem("Escape", "Escape").SetValue(new KeyBind("G".ToCharArray()[0], KeyBindType.Press)));
 
             // Drawings
-            /* Config.AddSubMenu(new Menu("Drawings", "Drawings"));
-             Config.SubMenu("Drawings").AddItem(new MenuItem("QRange", "Q Range").SetValue(new Circle(true, Color.FromArgb(150, Color.DodgerBlue))));*/
+             Config.AddSubMenu(new Menu("Drawings", "Drawings"));
+             Config.SubMenu("Drawings").AddItem(new MenuItem("QRange", "Q Range").SetValue(new Circle(true, Color.FromArgb(150, Color.DodgerBlue))));
+             Config.SubMenu("Drawings").AddItem(new MenuItem("QRange", "Q Range").SetValue(new Circle(true, Color.FromArgb(150, Color.OrangeRed))));
             Config.AddSubMenu(new Menu("Exploits", "Exploits"));
              Config.SubMenu("Exploits").AddItem(new MenuItem("QNFE", "Q No-Face").SetValue(true));
             // Config.SubMenu("Drawings").AddItem(new MenuItem("ERange", "E Range").SetValue(new Circle(true, Color.FromArgb(150, Color.DodgerBlue))));
@@ -247,14 +248,14 @@ namespace SFKatarina
         #region OnDraw
         private static void Drawing_OnDraw(EventArgs args)
         {
-            /*foreach (var spell in SpellList)
+            foreach (var spell in SpellList)
             {
                 var menuItem = Config.Item(spell.Slot + "Range").GetValue<Circle>();
                 if (menuItem.Active)
                     Utility.DrawCircle(Player.Position, spell.Range, menuItem.Color);
                 // Drawing.DrawText(playerPos[0] - 65, playerPos[1] + 20, drawUlt.Color, "Hit R To kill " + UltTarget + "!");
 
-            }*/
+            }
             //Drawing tempoarily disabled
         }
         #endregion
