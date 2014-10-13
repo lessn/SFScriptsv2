@@ -99,7 +99,6 @@ namespace SFSeries
             if (!Orbwalking.CanMove(40)) return;
 
             var allMinions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range);
-            var useQ = Config.Item("useQW").GetValue<bool>();
             if (!Q.IsReady()) return;
             Q.Cast();
         }
