@@ -183,7 +183,6 @@ namespace SFKatarina
             if (!Orbwalking.CanMove(40)) return;
 
             var allMinions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range);
-            MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range);
             var useQ = Config.Item("useQW").GetValue<bool>();
             var useW = Config.Item("useWW").GetValue<bool>();
             if (useQ && Q.IsReady())
