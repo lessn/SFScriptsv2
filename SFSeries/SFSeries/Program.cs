@@ -28,6 +28,10 @@ namespace SFSeries
                 case "Katarina":
                     new Katarina();
                     break;
+                default:
+                    Game.PrintChat("Champion not supported by SFSeries");
+                    break;
+                    
             }
         }
     }
