@@ -4,7 +4,7 @@ SFScriptsv2
 ##SFSeries
 
 ###SFAhri
-!(SFAhri)[http://i.imgur.com/HZ1zIzv.gif]
+![SFAhri](http://i.imgur.com/HZ1zIzv.gif)
   
   Features:
   Basic combo
@@ -17,7 +17,7 @@ SFScriptsv2
   
  
 ###SFKatarina
-!(SFKatarina)[http://i.imgur.com/K5UItRb.gif]
+![SFKatarina](http://i.imgur.com/K5UItRb.gif)
 
   SFKatarina
 
