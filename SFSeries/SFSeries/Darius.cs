@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using LeagueSharp;
 using LeagueSharp.Common;
 using System;
-using SharpDX;
 using Color = System.Drawing.Color;
 
 namespace SFSeries
@@ -100,7 +98,11 @@ namespace SFSeries
 
             var allMinions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range);
             if (!Q.IsReady()) return;
-            Q.Cast();
+// ReSharper disable once UnusedVariable
+            foreach (var minion in allMinions.Where(minion => minion.Distance(_player) < Q.Range))
+            {
+                Q.Cast();
+            }
         }
 
         private static void Harras()
