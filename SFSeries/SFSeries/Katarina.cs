@@ -56,7 +56,6 @@ namespace SFSeries
         // ReSharper disable once UnusedParameter.Local
         public Katarina()
         {
-            Game.PrintChat("Katarina loaded");
             Game_OnGameLoad();
         }
         #endregion
@@ -64,7 +63,6 @@ namespace SFSeries
         #region OnGameLoad
         static void Game_OnGameLoad()
         {
-            Game.PrintChat("Loaded 1");
             _player = ObjectManager.Player;
             Q = new Spell(SpellSlot.Q, 675);
             W = new Spell(SpellSlot.W, 375);
