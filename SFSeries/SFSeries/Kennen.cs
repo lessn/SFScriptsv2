@@ -1,6 +1,5 @@
 ﻿using LeagueSharp;
 using LeagueSharp.Common;
-using LX_Orbwalker;
 using System;
 using System.Linq;
 
@@ -70,12 +69,12 @@ namespace SFSeries
 
         private static void Game_OnGameUpdate(EventArgs args)
         {
-            switch (LXOrbwalker.CurrentMode)
+            switch (Orbwalker.ActiveMode)
             {
-                case LXOrbwalker.Mode.Combo:
+                case Orbwalking.OrbwalkingMode.Combo:
                     Combo();
                     break;
-                case LXOrbwalker.Mode.Harass:
+                case Orbwalking.OrbwalkingMode.Mixed:
                     Harras();
                     break;
             }
