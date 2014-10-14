@@ -52,6 +52,9 @@ namespace SFSeries
             Sf.AddSubMenu(harras);
             //Exploits
             Sf.AddItem(new MenuItem("NFE", "No-Face").SetValue(false));
+            Sf.addSubMenu(new Menu("Ult Options", "ultOp"));
+            Sf.SubMenu("ultOp").AddItem(new MenuItem("useRAm", "use R if x enemies"));
+            Sf.SubMenu("ultOp").AddItem(new MenuItem("rValue", "Amount").SetValue(new Slider(3, 0, 5)))
             //Make the menu visible
             Sf.AddToMainMenu();
 
@@ -110,7 +113,9 @@ namespace SFSeries
             }
             if (target.IsValidTarget(R.Range) & R.IsReady())
             {
-                R.Cast(target, Sf.Item("NFE").GetValue<bool>());
+                if (menu.Item("useRAm").GetValue<bool>() && Utility.CountEnemysInRange((int) R.Range) >= menu.Item("rValue").GetValue<Slider>().Value) {
+                    R.Cast(target, Sf.Item("NFE").GetValue<bool>());
+                }
             }
         }
 
