@@ -98,7 +98,7 @@ namespace SFSeries
             var target = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Magical);
             if (target.IsValidTarget(Q.Range) && Q.IsReady())
             {
-                Q.CastIfHitchanceEquals(target, HitChance.High, Sf.Item("NFE").GetValue<bool>());
+                Q.Cast(target, Sf.Item("NFE").GetValue<bool>());
             }
 
             
@@ -109,7 +109,7 @@ namespace SFSeries
             var target = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Magical);
             if (target.IsValidTarget(Q.Range) && Q.IsReady())
             {
-                Q.CastIfHitchanceEquals(target,HitChance.High,Sf.Item("NFE").GetValue<bool>());
+                Q.Cast(target,Sf.Item("NFE").GetValue<bool>());
             }
             if (target.IsValidTarget(R.Range) & R.IsReady())
             {
