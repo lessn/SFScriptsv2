@@ -1,69 +1,39 @@
-﻿/*
-     _________________________  .__          .__ 
-    /   _____/\_   _____/  _  \ |  |_________|__|
-    \_____  \  |    __)/  /_\  \|  |  \_  __ \  |
-    /        \ |     \/    |    \   Y  \  | \/  |
-   /_______  / \___  /\____|__  /___|  /__|  |__|
-           \/      \/         \/     \/          
- * 
- * Features:
- * Basic combo
- * Best prodiction.
- * Lag-free circles.
- * Easy user customability
- * 
- * Credits
- * Snorflake
- * 
- */
-#region References
-using System;
-using System.Drawing;
-using LeagueSharp;
+﻿using LeagueSharp;
 using LeagueSharp.Common;
 using LX_Orbwalker;
+using System;
+using System.Linq;
 
 namespace SFSeries
-        {
-    internal class Ahri
-    
-        {
-            
-            
+{
+    class Kennen
+    {
 
-
-                #endregion
-
-                #region Declares
-                public static string Name = "Ahri";
+        #region Declares
+                public static string Name = "Kennen";
                 public static LXOrbwalker Orbwalker ;
                 public static Obj_AI_Hero Player = ObjectManager.Player;
-                public static Spell Q, W, E;
+                public static Spell Q, W, R;
                 public static Items.Item Dfg;
 
                 public static Menu Sf;
 
-                    public Ahri()
+                    public Kennen()
                     {
                         Game_OnGameLoad();
                     }
-                    #endregion
 
-                #region OnGameLoad
-        static void Game_OnGameLoad()
+        private void Game_OnGameLoad()
         {
-            if (Player.BaseSkinName != Name) return;
-            //im there
             Q = new Spell(SpellSlot.Q, 880);
             W = new Spell(SpellSlot.W, 800);
-            E = new Spell(SpellSlot.E, 975);
+            R = new Spell(SpellSlot.R, 975);
 
             Q.SetSkillshot(0.50f, 100f, 1100f, false, SkillshotType.SkillshotLine);
-            E.SetSkillshot(0.50f, 60f, 1200f, true, SkillshotType.SkillshotLine);
             //Base menu
             Sf = new Menu("SFSeries", "SFSeries", true);
             //Orbwalker and menu
-            
+
             //moment :D
 
             var orbwalkerMenu = new Menu("LX Orbwalker", "LX_Orbwalker");
@@ -95,65 +65,56 @@ namespace SFSeries
 
         private static void Drawing_OnDraw(EventArgs args)
         {
-            Utility.DrawCircle(Player.Position, Q.Range, Color.Crimson);
-            Utility.DrawCircle(Player.Position,E.Range,Color.Chartreuse);
+            
         }
 
-        #endregion
-
-                #region OnGameUpdate
-        static void Game_OnGameUpdate(EventArgs args)
+        private static void Game_OnGameUpdate(EventArgs args)
         {
             switch (LXOrbwalker.CurrentMode)
             {
                 case LXOrbwalker.Mode.Combo:
                     Combo();
                     break;
-                case LXOrbwalker.Mode.Harass :
+                case LXOrbwalker.Mode.Harass:
                     Harras();
                     break;
             }
+            AlwaysW();
         }
-        #endregion
 
-                #region Combo
-        public static void Combo()
+        private static void AlwaysW()
         {
-            // Game.PrintChat("Got to COMBO function");
-            var target = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Magical);
-            if (target == null) return;
-
-
-            if (target.IsValidTarget(Q.Range) && Q.IsReady())
-            {
-                Q.Cast(target, Sf.Item("NFE").GetValue<bool>());
-            }
-            if (target.IsValidTarget(W.Range) && W.IsReady())
+// ReSharper disable once UnusedVariable
+            foreach (var target in ObjectManager.Get<Obj_AI_Hero>().Where(target => target.IsValidTarget(W.Range)).Where(target => target.HasBuff("", true)))
             {
                 W.Cast();
             }
-            if (target.IsValidTarget(E.Range) & E.IsReady())
-            {
-                E.Cast(target, Sf.Item("NFE").GetValue<bool>());
-            }
-
         }
-        #endregion
 
-                #region Harras
-        public static void Harras()
+        private static void Harras()
         {
-            var target = SimpleTs.GetTarget(E.Range, SimpleTs.DamageType.Magical);
-            if (target == null) return;
-
-
+            var target = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Magical);
             if (target.IsValidTarget(Q.Range) && Q.IsReady())
             {
-                Q.Cast(target, Sf.Item("NFE").GetValue<bool>());
+                Q.CastIfHitchanceEquals(target, HitChance.High, Sf.Item("NFE").GetValue<bool>());
+            }
+
+            
+        }
+
+        private static void Combo()
+        {
+            var target = SimpleTs.GetTarget(Q.Range, SimpleTs.DamageType.Magical);
+            if (target.IsValidTarget(Q.Range) && Q.IsReady())
+            {
+                Q.CastIfHitchanceEquals(target,HitChance.High,Sf.Item("NFE").GetValue<bool>());
+            }
+            if (target.IsValidTarget(R.Range) & R.IsReady())
+            {
+                R.Cast(target, Sf.Item("NFE").GetValue<bool>());
             }
         }
+
         #endregion
-
-           }
-
-      }
+    }
+}
