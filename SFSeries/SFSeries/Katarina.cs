@@ -152,12 +152,17 @@ namespace SFSeries
         private static void Game_OnGameUpdate(EventArgs args)
         {
             if (_player.IsDead) return;
-            if (IsEnemyInRange()) // If an enemy is in range and im ultimating - dont cancel the ult before their dead
+            if (Utility.CountEnemysInRange((int) R.Range) > 0) // If an enemy is in range and im ultimating - dont cancel the ult before their dead
                 if (ObjectManager.Player.IsChannelingImportantSpell()) return;
-            if (!IsEnemyInRange() && ObjectManager.Player.IsChannelingImportantSpell()) // If the ult isnt hitting anyone
-            {
+                else
+                {
+                    if (_player.IsChannelingImportantSpell())
+                    {
+                        _player.IssueOrder(GameObjectOrder.MoveTo, _player.Position);
+                    }   
+                }
                 ObjectManager.Player.IssueOrder(GameObjectOrder.MoveTo, ObjectManager.Player); // Cancels ult
-            }
+            
             var useQks = Config.Item("KillstealQ").GetValue<bool>() && Q.IsReady();
             switch (Orbwalker.ActiveMode)
             {
