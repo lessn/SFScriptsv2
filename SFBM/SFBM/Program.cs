@@ -1,4 +1,18 @@
-﻿using LeagueSharp;
+﻿/*
+  ______________________________    _____   
+ /   _____/\_   _____/\______   \  /     \  
+ \_____  \  |    __)   |    |  _/ /  \ /  \ 
+ /        \ |     \    |    |   \/    Y    \
+/_______  / \___  /    |______  /\____|__  /
+        \/      \/            \/         \/ 
+ * Credits:
+ * Snorflake
+ * dasnecko - idea of chat spam
+ * 
+ * features
+ * get chat restriced in like 3 games and maybe banned perma :)
+ * */
+using LeagueSharp;
 using LeagueSharp.Common;
 using SFBM.Annotations;
 using System;
@@ -38,7 +52,8 @@ namespace SFBM
                 var r = new Random();
                 var i = r.Next(1, 9);
                 var sendmessage = _messages[i];
-                Game.Say("/all " + sendmessage + hero.BaseSkinName);
+                Utility.DelayAction.Add(30, (Utility.DelayAction.Callback)Game.Say("/all " + sendmessage + hero.BaseSkinName));
+                
             }
         }
     }

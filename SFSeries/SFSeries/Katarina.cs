@@ -152,7 +152,7 @@ namespace SFSeries
         private static void Game_OnGameUpdate(EventArgs args)
         {
             if (_player.IsDead) return;
-            if (Utility.CountEnemysInRange((int) R.Range) >= 1) // If an enemy is in range and im ultimating - dont cancel the ult before their dead
+            /*if (Utility.CountEnemysInRange((int) R.Range) >= 1) // If an enemy is in range and im ultimating - dont cancel the ult before their dead
                 if (ObjectManager.Player.IsChannelingImportantSpell()) return;
                 else
                 {
@@ -160,7 +160,7 @@ namespace SFSeries
                     {
                         _player.IssueOrder(GameObjectOrder.MoveTo, _player.Position);
                     }   
-                }
+                }*/
             
             var useQks = Config.Item("KillstealQ").GetValue<bool>() && Q.IsReady();
             switch (Orbwalker.ActiveMode)
@@ -202,7 +202,7 @@ namespace SFSeries
             var useW = Config.Item("UseWFarm").GetValue<bool>();
             if (useQ && Q.IsReady())
             {
-                foreach (var minion in from minion in allMinions where minion != null where _player.Distance3D(minion) < Q.Range where Q.IsKillable(minion) select minion)
+                foreach (var minion in from minion in allMinions where minion != null where _player.Distance3D(minion) < Q.Range where _player.GetSpellDamage(minion, SpellSlot.Q) > minion.Health select minion)
                 {
                     Q.CastOnUnit(minion);
                     return;
@@ -311,7 +311,7 @@ namespace SFSeries
             var finalVector = basePos + (newPos.Normalized() * (560));
             var movePos = basePos + (newPos.Normalized() * (100));
             if (!Config.Item("Escape").GetValue<KeyBind>().Active) return;
-            ObjectManager.Player.IssueOrder(GameObjectOrder.MoveTo, movePos.To3D());
+            //ObjectManager.Player.IssueOrder(GameObjectOrder.MoveTo, movePos.To3D());
             if (!E.IsReady()) return;
             var castWard = true;
             foreach (var esc in ObjectManager.Get<Obj_AI_Base>().Where(esc => esc.Distance(ObjectManager.Player) <= E.Range))
