@@ -152,7 +152,7 @@ namespace SFSeries
         private static void Game_OnGameUpdate(EventArgs args)
         {
             if (_player.IsDead) return;
-            if (Utility.CountEnemysInRange((int) R.Range) > 0) // If an enemy is in range and im ultimating - dont cancel the ult before their dead
+            if (Utility.CountEnemysInRange((int) R.Range) >= 1) // If an enemy is in range and im ultimating - dont cancel the ult before their dead
                 if (ObjectManager.Player.IsChannelingImportantSpell()) return;
                 else
                 {
