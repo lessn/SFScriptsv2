@@ -35,7 +35,7 @@ namespace SFSeries
 
             //moment :D
 
-            var orbwalkerMenu = new Menu("LX Orbwalker", "LX_Orbwalker");
+            var orbwalkerMenu = new Menu("Orbwalker", "LX_Orbwalker");
             Orbwalker = new Orbwalking.Orbwalker(orbwalkerMenu);
             Sf.AddSubMenu(orbwalkerMenu);
             //Target selector and menu  y thats all 
@@ -52,9 +52,9 @@ namespace SFSeries
             Sf.AddSubMenu(harras);
             //Exploits
             Sf.AddItem(new MenuItem("NFE", "No-Face").SetValue(false));
-            Sf.addSubMenu(new Menu("Ult Options", "ultOp"));
+            Sf.AddSubMenu(new Menu("Ult Options", "ultOp"));
             Sf.SubMenu("ultOp").AddItem(new MenuItem("useRAm", "use R if x enemies"));
-            Sf.SubMenu("ultOp").AddItem(new MenuItem("rValue", "Amount").SetValue(new Slider(3, 0, 5)))
+            Sf.SubMenu("ultOp").AddItem(new MenuItem("rValue", "Amount").SetValue(new Slider(3, 1, 5)));
             //Make the menu visible
             Sf.AddToMainMenu();
 
@@ -111,11 +111,9 @@ namespace SFSeries
             {
                 Q.Cast(target,Sf.Item("NFE").GetValue<bool>());
             }
-            if (target.IsValidTarget(R.Range) & R.IsReady())
-            {
-                if (menu.Item("useRAm").GetValue<bool>() && Utility.CountEnemysInRange((int) R.Range) >= menu.Item("rValue").GetValue<Slider>().Value) {
-                    R.Cast(target, Sf.Item("NFE").GetValue<bool>());
-                }
+            if (!(target.IsValidTarget(R.Range) & R.IsReady())) return;
+            if (Sf.Item("useRAm").GetValue<bool>() && Utility.CountEnemysInRange((int) R.Range) >= Sf.Item("rValue").GetValue<Slider>().Value) {
+                R.Cast(target, Sf.Item("NFE").GetValue<bool>());
             }
         }
 

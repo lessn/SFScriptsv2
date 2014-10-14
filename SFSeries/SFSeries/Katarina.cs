@@ -82,7 +82,7 @@ namespace SFSeries
             Config = new Menu("SFSeries", "SFSeries", true);
 
             //Orbwalker submenu            
-            var orbwalkerMenu = new Menu("LX Orbwalker", "LX_Orbwalker");
+            var orbwalkerMenu = new Menu("Orbwalker", "LX_Orbwalker");
             Orbwalker = new Orbwalking.Orbwalker(orbwalkerMenu);
             Config.AddSubMenu(orbwalkerMenu);
             //Add the targer selector to the menu.

@@ -21,7 +21,6 @@ using System;
 using System.Drawing;
 using LeagueSharp;
 using LeagueSharp.Common;
-using LX_Orbwalker;
 
 namespace SFSeries
         {
@@ -36,7 +35,7 @@ namespace SFSeries
 
                 #region Declares
                 public static string Name = "Ahri";
-                public static LXOrbwalker Orbwalker ;
+                public static Orbwalking.Orbwalker Orbwalker ;
                 public static Obj_AI_Hero Player = ObjectManager.Player;
                 public static Spell Q, W, E;
                 public static Items.Item Dfg;
@@ -66,8 +65,8 @@ namespace SFSeries
             
             //moment :D
 
-            var orbwalkerMenu = new Menu("LX Orbwalker", "LX_Orbwalker");
-            LXOrbwalker.AddToMenu(orbwalkerMenu);
+            var orbwalkerMenu = new Menu("Orbwalker", "LX_Orbwalker");
+            Orbwalker = new Orbwalking.Orbwalker(orbwalkerMenu);
             Sf.AddSubMenu(orbwalkerMenu);
             //Target selector and menu  y thats all 
             var ts = new Menu("Target Selector", "Target Selector");
@@ -104,12 +103,12 @@ namespace SFSeries
                 #region OnGameUpdate
         static void Game_OnGameUpdate(EventArgs args)
         {
-            switch (LXOrbwalker.CurrentMode)
+            switch (Orbwalker.ActiveMode)
             {
-                case LXOrbwalker.Mode.Combo:
+                case Orbwalking.OrbwalkingMode.Combo:
                     Combo();
                     break;
-                case LXOrbwalker.Mode.Harass :
+                case Orbwalking.OrbwalkingMode.Mixed :
                     Harras();
                     break;
             }
