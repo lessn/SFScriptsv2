@@ -1,10 +1,10 @@
 ﻿/*
- *   _________________________  .__          .__ 
- *  /   _____/\_   _____/  _  \ |  |_________|__|
- *  \_____  \  |    __)/  /_\  \|  |  \_  __ \  |
- *  /        \ |     \/    |    \   Y  \  | \/  |
- * /_______  / \___  /\____|__  /___|  /__|  |__|
- *         \/      \/         \/     \/          
+     _________________________  .__          .__ 
+    /   _____/\_   _____/  _  \ |  |_________|__|
+    \_____  \  |    __)/  /_\  \|  |  \_  __ \  |
+    /        \ |     \/    |    \   Y  \  | \/  |
+   /_______  / \___  /\____|__  /___|  /__|  |__|
+           \/      \/         \/     \/          
  * 
  * Features:
  * Basic combo
@@ -16,39 +16,44 @@
  * Snorflake
  * 
  */
-#region References
 
+using System;
+using System.Drawing;
 using LeagueSharp;
 using LeagueSharp.Common;
-using System;
-using Color = System.Drawing.Color;
+using LX_Orbwalker;
 
-#endregion
-// By iSnorflake
 namespace SFSeries
-{
-    class Ahri
-    {
-        #region Declares
-        public static string Name = "Ahri";
-        public static Orbwalking.Orbwalker Orbwalker;
-        public static Obj_AI_Hero Player = ObjectManager.Player;
-        public static Spell Q, W, E;
-        public static Items.Item Dfg;
-
-        public static Menu Sf;
-
-        public Ahri()
         {
-            Game_OnGameLoad();
-        }
-        #endregion
+    internal class Ahri
+    
+        {
+            
+                #region References
 
-        #region OnGameLoad
+
+                #endregion
+
+                #region Declares
+                public static string Name = "Ahri";
+                public static LXOrbwalker Orbwalker ;
+                public static Obj_AI_Hero Player = ObjectManager.Player;
+                public static Spell Q, W, E;
+                public static Items.Item Dfg;
+
+                public static Menu Sf;
+
+                    public Ahri()
+                    {
+                        Game_OnGameLoad();
+                    }
+                    #endregion
+
+                #region OnGameLoad
         static void Game_OnGameLoad()
         {
             if (Player.BaseSkinName != Name) return;
-
+            //im there
             Q = new Spell(SpellSlot.Q, 880);
             W = new Spell(SpellSlot.W, 800);
             E = new Spell(SpellSlot.E, 975);
@@ -58,9 +63,13 @@ namespace SFSeries
             //Base menu
             Sf = new Menu("SFSeries", "SFSeries", true);
             //Orbwalker and menu
-            Sf.AddSubMenu(new Menu("Orbwalker", "Orbwalker"));
-            Orbwalker = new Orbwalking.Orbwalker(Sf.SubMenu("Orbwalker"));
-            //Target selector and menu
+            
+            //moment :D
+
+            var orbwalkerMenu = new Menu("LX Orbwalker", "LX_Orbwalker");
+            LXOrbwalker.AddToMenu(orbwalkerMenu);
+            Sf.AddSubMenu(orbwalkerMenu);
+            //Target selector and menu  y thats all 
             var ts = new Menu("Target Selector", "Target Selector");
             SimpleTs.AddToMenu(ts);
             Sf.AddSubMenu(ts);
@@ -79,38 +88,35 @@ namespace SFSeries
 
             Drawing.OnDraw += Drawing_OnDraw; // Add onDraw
             Game.OnGameUpdate += Game_OnGameUpdate; // adds OnGameUpdate (Same as onTick in bol)
-
             Game.PrintChat("SFAhri loaded! By iSnorflake");
 
 
         }
+
+        private static void Drawing_OnDraw(EventArgs args)
+        {
+            Utility.DrawCircle(Player.Position, Q.Range, Color.Crimson);
+            Utility.DrawCircle(Player.Position,E.Range,Color.Chartreuse);
+        }
+
         #endregion
 
-        #region OnGameUpdate
+                #region OnGameUpdate
         static void Game_OnGameUpdate(EventArgs args)
         {
-            switch (Orbwalker.ActiveMode)
+            switch (LXOrbwalker.CurrentMode)
             {
-                case Orbwalking.OrbwalkingMode.Combo:
+                case LXOrbwalker.Mode.Combo:
                     Combo();
                     break;
-                case Orbwalking.OrbwalkingMode.Mixed:
+                case LXOrbwalker.Mode.Harass :
                     Harras();
                     break;
-               
             }
         }
         #endregion
 
-        #region OnDraw
-        static void Drawing_OnDraw(EventArgs args)
-        {
-            Utility.DrawCircle(Player.Position, Q.Range,Color.DarkBlue);
-            Utility.DrawCircle(Player.Position, E.Range, Color.Purple);
-        }
-        #endregion
-
-        #region Combo
+                #region Combo
         public static void Combo()
         {
             // Game.PrintChat("Got to COMBO function");
@@ -134,7 +140,7 @@ namespace SFSeries
         }
         #endregion
 
-        #region Harras
+                #region Harras
         public static void Harras()
         {
             var target = SimpleTs.GetTarget(E.Range, SimpleTs.DamageType.Magical);
@@ -148,6 +154,6 @@ namespace SFSeries
         }
         #endregion
 
-    }
+           }
 
-}
+      }

@@ -1,10 +1,11 @@
-﻿/* SFKatarina
- *  ________________________  __.       __               .__               
- * /   _____/\_   _____/    |/ _|____ _/  |______ _______|__| ____ _____   
- * \_____  \  |    __) |      < \__  \\   __\__  \\_  __ \  |/    \\__  \  
- * /        \ |     \  |    |  \ / __ \|  |  / __ \|  | \/  |   |  \/ __ \_
- * /_______  / \___  /  |____|__ (____  /__| (____  /__|  |__|___|  (____  /
- *         \/      \/           \/    \/          \/              \/     \/ 
+﻿/* 
+ * SFKatarina
+    ________________________  __.       __               .__               
+   /   _____/\_   _____/    |/ _|____ _/  |______ _______|__| ____ _____   
+   \_____  \  |    __) |      < \__  \\   __\__  \\_  __ \  |/    \\__  \  
+   /        \ |     \  |    |  \ / __ \|  |  / __ \|  | \/  |   |  \/ __ \_
+  /_______  / \___  /  |____|__ (____  /__| (____  /__|  |__|___|  (____  /
+          \/      \/           \/    \/          \/              \/     \/ 
  * 
  * Features:
  * Perfect Combo
@@ -17,16 +18,18 @@
  * Fluxy - Re-writing ward jump & Teaching me about vectors and movement packets
  * */
 
-using Color = System.Drawing.Color;
 
-#region References
+
+        #region References
 
 using LeagueSharp;
 using LeagueSharp.Common;
+using LX_Orbwalker;
 using SharpDX;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Color = System.Drawing.Color;
 
 // By iSnorflake
 namespace SFSeries
@@ -39,7 +42,7 @@ namespace SFSeries
         #region Declares
 
         //Orbwalker instance
-        public static Orbwalking.Orbwalker Orbwalker;
+        public static LXOrbwalker Orbwalker;
 
         //Spells
         public static List<Spell> SpellList = new List<Spell>();
@@ -79,9 +82,10 @@ namespace SFSeries
             //Create the menu
             Config = new Menu("SFSeries", "SFSeries", true);
 
-            //Orbwalker submenu
-            Config.AddSubMenu(new Menu("Orbwalking", "Orbwalking"));
-            Orbwalker = new Orbwalking.Orbwalker(Config.SubMenu("Orbwalking"));
+            //Orbwalker submenu            
+            var orbwalkMenu = new Menu("Orbwalker", "Orbwalker");
+            LXOrbwalker.AddToMenu(orbwalkMenu);
+            Config.AddSubMenu(orbwalkMenu);
             //Add the targer selector to the menu.
             var targetSelectorMenu = new Menu("Target Selector", "Target Selector");
             SimpleTs.AddToMenu(targetSelectorMenu);
@@ -95,7 +99,7 @@ namespace SFSeries
             Config.SubMenu("Combo").AddItem(new MenuItem("UseWCombo", "Use W").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseECombo", "Use E").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseRCombo", "Use R").SetValue(true));
-            Config.SubMenu("Combo").AddItem(new MenuItem("ComboActive", "Combo!").SetValue(new KeyBind(32, KeyBindType.Press)));
+            Config.SubMenu("Combo").AddItem(new MenuItem("ProcQ", "Proc Q").SetValue(true));
 
             Config.AddSubMenu(new Menu("Farm", "Farm")); // creds tc-crew
             Config.SubMenu("Farm")
@@ -106,14 +110,9 @@ namespace SFSeries
                 .AddItem(
                     new MenuItem("UseWFarm", "Use W").SetValue(
                         true));
-            Config.SubMenu("Farm")
-                .AddItem(
-                    new MenuItem("FreezeActive", "Freeze!").SetValue(
-                        new KeyBind("C".ToCharArray()[0], KeyBindType.Press)));
             var waveclear = new Menu("Waveclear", "WaveclearMenu");
             waveclear.AddItem(new MenuItem("useQW", "Use Q?").SetValue(true));
             waveclear.AddItem(new MenuItem("useWW", "Use W?").SetValue(true));
-            waveclear.AddItem(new MenuItem("Waveclear", "Waveclear").SetValue(new KeyBind("V".ToCharArray()[0], KeyBindType.Press)));
             Config.AddSubMenu(waveclear); // Thanks to ChewyMoon for the idea of doing the menu this way
 
             // Misc
@@ -133,9 +132,20 @@ namespace SFSeries
             //Add the events we are going to use
             Game.OnGameUpdate += Game_OnGameUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
+            LXOrbwalker.BeforeAttack += LXOrbwalker_BeforeAttack;
 
 
 
+        }
+        #endregion
+
+        #region BeforeAttack
+        static void LXOrbwalker_BeforeAttack(LXOrbwalker.BeforeAttackEventArgs args)
+        {
+            var target = SimpleTs.GetTarget(E.Range, SimpleTs.DamageType.Magical);
+            if (LXOrbwalker.CurrentMode != LXOrbwalker.Mode.Combo) return;
+            if (!Config.Item("ProcQ").GetValue<bool>()) return;
+            Q.CastOnUnit(target, Config.Item("QNFE").GetValue<bool>());
         }
         #endregion
 
@@ -149,28 +159,29 @@ namespace SFSeries
             {
                 ObjectManager.Player.IssueOrder(GameObjectOrder.MoveTo, ObjectManager.Player); // Cancels ult
             }
-            Orbwalker.SetAttacks(true);
-            Orbwalker.SetMovement(true);
             var useQks = Config.Item("KillstealQ").GetValue<bool>() && Q.IsReady();
-            if (Config.Item("ComboActive").GetValue<KeyBind>().Active)
+            switch (LXOrbwalker.CurrentMode)
             {
-                Combo();
-            }
-            if (useQks)
-                Killsteal();
-            if (Config.Item("FreezeActive").GetValue<KeyBind>().Active)
-                Farm();
-            if (Config.Item("Waveclear").GetValue<KeyBind>().Active)
-            {
-                WaveClear();
+                case LXOrbwalker.Mode.Combo:
+                    Combo();
+                    break;
+                case LXOrbwalker.Mode.LaneFreeze:
+                    Farm();
+                    break;
+                case LXOrbwalker.Mode.LaneClear:
+                    WaveClear();
+                    break;
             }
             Escape();
             AlwaysW();
+            if(useQks)
+            Killsteal();
         }
 
         private static void AlwaysW()
         {
             if (!W.IsReady()) return;
+// ReSharper disable once UnusedVariable
             foreach (var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(W.Range)))
             {
                 W.Cast();
@@ -182,7 +193,7 @@ namespace SFSeries
         #region Farm
         private static void Farm() // Credits TC-CREW
         {
-            if (!Orbwalking.CanMove(40)) return;
+            if (!LXOrbwalker.CanMove()) return;
             var allMinions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range);
             var useQ = Config.Item("UseQFarm").GetValue<bool>();
             var useW = Config.Item("UseWFarm").GetValue<bool>();
@@ -230,7 +241,7 @@ namespace SFSeries
         #region Combo
         private static void Combo()
         {
-            Orbwalker.SetAttacks(true);
+            LXOrbwalker.SetAttack(true);
             var target = SimpleTs.GetTarget(E.Range, SimpleTs.DamageType.Magical);
             if (target == null) return;
 
@@ -239,28 +250,23 @@ namespace SFSeries
                 if (!_player.IsChannelingImportantSpell())
                 {
 
-                    if (Q.IsReady() && _player.Distance(target) < Q.Range + target.BoundingRadius)
+                    if (Q.IsReady() && _player.Distance(target) < Q.Range + target.BoundingRadius && !Config.Item("ProcQ").GetValue<bool>())
                         Q.CastOnUnit(target, Config.Item("QNFE").GetValue<bool>());
                     if (E.IsReady() && _player.Distance(target) < E.Range + target.BoundingRadius)
                         E.CastOnUnit(target, Config.Item("QNFE").GetValue<bool>());
                     if (W.IsReady() && _player.Distance(target) < W.Range)
                         W.Cast();
                 }
-                if (R.IsReady() && _player.Distance(target) < (R.Range - 200))
-                    R.Cast();
-
-
-
-
-
+                if (!Q.IsReady() && R.IsReady() && _player.Distance(target) < (R.Range - 200))
+                R.Cast();
+                
             }
             else
             {
                 if (ObjectManager.Player.Distance(target) < Q.Range && Q.IsReady())
                     Q.CastOnUnit(target, true);
 
-                if (Config.Item("ComboActive").GetValue<KeyBind>().Active &&
-                    ObjectManager.Player.Distance(target) < E.Range && E.IsReady())
+                if (ObjectManager.Player.Distance(target) < E.Range && E.IsReady())
                     E.CastOnUnit(target);
 
                 if (ObjectManager.Player.Distance(target) < W.Range && W.IsReady())

@@ -1,7 +1,8 @@
-﻿using System.Linq;
-using LeagueSharp;
+﻿using LeagueSharp;
 using LeagueSharp.Common;
+using LX_Orbwalker;
 using System;
+using System.Linq;
 using Color = System.Drawing.Color;
 
 namespace SFSeries
@@ -10,7 +11,7 @@ namespace SFSeries
     {
 
         //Orbwalker instance
-        public static Orbwalking.Orbwalker Orbwalker;
+        public static LXOrbwalker Orbwalker;
 
         //Spells
         public static Spell Q;
@@ -43,8 +44,10 @@ namespace SFSeries
             Config = new Menu("SFSeries", "SFSeries", true);
 
             //Orbwalker submenu
-            Config.AddSubMenu(new Menu("Orbwalking", "Orbwalking"));
-            Orbwalker = new Orbwalking.Orbwalker(Config.SubMenu("Orbwalking"));
+            var orbwalkMenu = new Menu("Orbwalker", "Orbwalker");
+            LXOrbwalker.AddToMenu(orbwalkMenu);
+            Config.AddSubMenu(orbwalkMenu);
+
             //Add the targer selector to the menu.
             var targetSelectorMenu = new Menu("Target Selector", "Target Selector");
             SimpleTs.AddToMenu(targetSelectorMenu);
@@ -66,27 +69,40 @@ namespace SFSeries
             Config.AddSubMenu(new Menu("Exploits", "Exploits"));
             Config.SubMenu("Exploits").AddItem(new MenuItem("NFE", "No-Face Exploit").SetValue(true));
             // Config.SubMenu("Drawings").AddItem(new MenuItem("ERange", "E Range").SetValue(new Circle(true, Color.FromArgb(150, Color.DodgerBlue))));
-
             Config.AddToMainMenu();
-            //Add the events we are going to use\
+            //Add the events we are going to use
             Game.OnGameUpdate += Game_OnGameUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
+            LXOrbwalker.AfterAttack += LXOrbwalker_AfterAttack;
 
 
+
+        }
+
+        private static void LXOrbwalker_AfterAttack(Obj_AI_Base unit, Obj_AI_Base target)
+        {
+            if (!unit.IsMe ||
+                (LXOrbwalker.CurrentMode != LXOrbwalker.Mode.Combo && LXOrbwalker.CurrentMode != LXOrbwalker.Mode.Harass))
+                return;
+            if (!(target is Obj_AI_Hero)) return;
+            
+                W.Cast();
+                LXOrbwalker.ResetAutoAttackTimer();
+            
         }
 
         private static void Game_OnGameUpdate(EventArgs args)
         {
             if (_player.IsDead) return;
-            switch (Orbwalker.ActiveMode)
+            switch (LXOrbwalker.CurrentMode)
             {
-                case Orbwalking.OrbwalkingMode.Combo:
+                case LXOrbwalker.Mode.Combo:
                     Combo();
                     break;
-                case Orbwalking.OrbwalkingMode.Mixed:
+                case LXOrbwalker.Mode.Harass:
                     Harras();
                     break;
-                case Orbwalking.OrbwalkingMode.LaneClear:
+                case LXOrbwalker.Mode.LaneClear:
                     LaneClear();
                     break;
             }
@@ -114,10 +130,6 @@ namespace SFSeries
             {
                 Q.Cast();
             }
-            if (W.IsReady() && _player.Distance(target) < W.Range + target.BoundingRadius)
-            {
-                W.Cast();
-            }
             if (E.IsReady() && _player.Distance(target) < E.Range)
             {
                 E.Cast(target.ServerPosition, Config.Item("NFE").GetValue<bool>());
@@ -133,18 +145,13 @@ namespace SFSeries
             {
                 Q.Cast();
             }
-            if (W.IsReady() && _player.Distance(target) < W.Range + target.BoundingRadius)
-            {
-                W.Cast();
-            }
             if (E.IsReady() && _player.Distance(target) < E.Range)
             {
                 E.Cast(target.ServerPosition, Config.Item("NFE").GetValue<bool>());
             }
-            if (_player.GetSpellDamage(target, SpellSlot.R, 1) > target.Health)
-            {
-                R.CastOnUnit(target, Config.Item("NFE").GetValue<bool>());
-            }
+            if (!R.IsReady() || !(_player.GetSpellDamage(target, SpellSlot.R, 2) > target.Health)) return;
+            Game.PrintChat("Damage: " + (_player.GetSpellDamage(target,SpellSlot.R,2)));
+            R.CastOnUnit(target, Config.Item("NFE").GetValue<bool>());
         }
 
         private static void Drawing_OnDraw(EventArgs args)
