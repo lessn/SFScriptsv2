@@ -161,7 +161,6 @@ namespace SFSeries
                         _player.IssueOrder(GameObjectOrder.MoveTo, _player.Position);
                     }   
                 }
-                ObjectManager.Player.IssueOrder(GameObjectOrder.MoveTo, ObjectManager.Player); // Cancels ult
             
             var useQks = Config.Item("KillstealQ").GetValue<bool>() && Q.IsReady();
             switch (Orbwalker.ActiveMode)
