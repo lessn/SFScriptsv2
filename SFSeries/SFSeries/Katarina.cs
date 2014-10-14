@@ -373,9 +373,11 @@ namespace SFSeries
         }
         private static bool IsEnemyInRange() // Checks if an enemy is in range of my ultimate.
         {
-            var target = SimpleTs.GetTarget(R.Range, SimpleTs.DamageType.Magical);
-            if (target == null) return false;
-            return true;
+            if (ObjectManager.Get<Obj_AI_Hero>().Any(player => player.IsValidTarget(R.Range)))
+            {
+                return true;
+            }
+            return false;
         }
 
 
