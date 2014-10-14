@@ -1,6 +1,5 @@
 ﻿using LeagueSharp;
 using LeagueSharp.Common;
-using LX_Orbwalker;
 using System;
 using System.Linq;
 using Color = System.Drawing.Color;
@@ -11,7 +10,7 @@ namespace SFSeries
     {
 
         //Orbwalker instance
-        public static LXOrbwalker Orbwalker;
+        public static Orbwalking.Orbwalker Orbwalker;
 
         //Spells
         public static Spell Q;
@@ -44,9 +43,9 @@ namespace SFSeries
             Config = new Menu("SFSeries", "SFSeries", true);
 
             //Orbwalker submenu
-            var orbwalkMenu = new Menu("Orbwalker", "Orbwalker");
-            LXOrbwalker.AddToMenu(orbwalkMenu);
-            Config.AddSubMenu(orbwalkMenu);
+            var orbwalkerMenu = new Menu("LX Orbwalker", "LX_Orbwalker");
+            Orbwalker = new Orbwalking.Orbwalker(orbwalkerMenu);
+            Config.AddSubMenu(orbwalkerMenu);
 
             //Add the targer selector to the menu.
             var targetSelectorMenu = new Menu("Target Selector", "Target Selector");
@@ -73,7 +72,7 @@ namespace SFSeries
             //Add the events we are going to use
             Game.OnGameUpdate += Game_OnGameUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
-            LXOrbwalker.AfterAttack += LXOrbwalker_AfterAttack;
+            Orbwalking.AfterAttack += LXOrbwalker_AfterAttack;
 
 
 
@@ -82,27 +81,27 @@ namespace SFSeries
         private static void LXOrbwalker_AfterAttack(Obj_AI_Base unit, Obj_AI_Base target)
         {
             if (!unit.IsMe ||
-                (LXOrbwalker.CurrentMode != LXOrbwalker.Mode.Combo && LXOrbwalker.CurrentMode != LXOrbwalker.Mode.Harass))
+                (Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Combo && Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Mixed))
                 return;
             if (!(target is Obj_AI_Hero)) return;
             
                 W.Cast();
-                LXOrbwalker.ResetAutoAttackTimer();
+            Orbwalking.ResetAutoAttackTimer();
             
         }
 
         private static void Game_OnGameUpdate(EventArgs args)
         {
             if (_player.IsDead) return;
-            switch (LXOrbwalker.CurrentMode)
+            switch (Orbwalker.ActiveMode)
             {
-                case LXOrbwalker.Mode.Combo:
+                case Orbwalking.OrbwalkingMode.Combo:
                     Combo();
                     break;
-                case LXOrbwalker.Mode.Harass:
+                case Orbwalking.OrbwalkingMode.Mixed:
                     Harras();
                     break;
-                case LXOrbwalker.Mode.LaneClear:
+                case Orbwalking.OrbwalkingMode.LaneClear:
                     LaneClear();
                     break;
             }

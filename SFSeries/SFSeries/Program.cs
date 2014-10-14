@@ -27,9 +27,9 @@ namespace SFSeries
                 case "Darius":
                     new Darius();
                     break;
-                /*case "Kennen": // Currently disabled, not finished yet
+                case "Kennen": // Currently disabled, not finished yet
                     new Kennen();
-                    break;*/
+                    break;
                 default:
                     Game.PrintChat("This champion is not supported by SFSeries");
                     break;

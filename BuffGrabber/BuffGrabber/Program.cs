@@ -1,4 +1,5 @@
-﻿using LeagueSharp;
+﻿using System.Linq;
+using LeagueSharp;
 using LeagueSharp.Common;
 using System;
 
@@ -19,9 +20,12 @@ namespace BuffGrabber
 
         static void Game_OnGameUpdate(EventArgs args)
         {
-            foreach (var player in ObjectManager.Get<Obj_AI_Hero>())
+            foreach (var target in ObjectManager.Get<Obj_AI_Hero>().Where(target => !target.IsMe))
             {
-                Game.PrintChat(player.BaseSkinName + " Has buffs: " + player.Buffs);
+                foreach (var buff in target.Buffs.Where(buff => buff.Name != "colossalstrength"))
+                {
+                    Game.PrintChat("Buff: " + buff.Name + " - DisplayName: " + buff.DisplayName);
+                }
             }
         }
     }

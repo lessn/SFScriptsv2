@@ -11,7 +11,7 @@ namespace SFSeries
 
         #region Declares
                 public static string Name = "Kennen";
-                public static LXOrbwalker Orbwalker ;
+                public static Orbwalking.Orbwalker Orbwalker ;
                 public static Obj_AI_Hero Player = ObjectManager.Player;
                 public static Spell Q, W, R;
                 public static Items.Item Dfg;
@@ -25,11 +25,11 @@ namespace SFSeries
 
         private void Game_OnGameLoad()
         {
-            Q = new Spell(SpellSlot.Q, 880);
+            Q = new Spell(SpellSlot.Q, 1050);
             W = new Spell(SpellSlot.W, 800);
-            R = new Spell(SpellSlot.R, 975);
+            R = new Spell(SpellSlot.R, 550);
 
-            Q.SetSkillshot(0.50f, 100f, 1100f, false, SkillshotType.SkillshotLine);
+            Q.SetSkillshot(0.65f, 50f, 1700f, true, SkillshotType.SkillshotLine);
             //Base menu
             Sf = new Menu("SFSeries", "SFSeries", true);
             //Orbwalker and menu
@@ -37,7 +37,7 @@ namespace SFSeries
             //moment :D
 
             var orbwalkerMenu = new Menu("LX Orbwalker", "LX_Orbwalker");
-            LXOrbwalker.AddToMenu(orbwalkerMenu);
+            Orbwalker = new Orbwalking.Orbwalker(orbwalkerMenu);
             Sf.AddSubMenu(orbwalkerMenu);
             //Target selector and menu  y thats all 
             var ts = new Menu("Target Selector", "Target Selector");
@@ -47,7 +47,7 @@ namespace SFSeries
             Sf.AddSubMenu(new Menu("Combo", "Combo"));
             Sf.SubMenu("Combo").AddItem(new MenuItem("useQ", "Use Q?").SetValue(true));
             Sf.SubMenu("Combo").AddItem(new MenuItem("useW", "Use W?").SetValue(true));
-            Sf.SubMenu("Combo").AddItem(new MenuItem("useE", "Use E?").SetValue(true));
+            Sf.SubMenu("Combo").AddItem(new MenuItem("useR", "Use R?").SetValue(true));
             var harras = new Menu("Harras", "Harras");
             harras.AddItem(new MenuItem("useQH", "Use Q?").SetValue(true));
             Sf.AddSubMenu(harras);
@@ -58,7 +58,7 @@ namespace SFSeries
 
             Drawing.OnDraw += Drawing_OnDraw; // Add onDraw
             Game.OnGameUpdate += Game_OnGameUpdate; // adds OnGameUpdate (Same as onTick in bol)
-            Game.PrintChat("SFAhri loaded! By iSnorflake");
+            Game.PrintChat("SFSeries loaded! By iSnorflake");
 
 
         }
@@ -85,7 +85,7 @@ namespace SFSeries
         private static void AlwaysW()
         {
 // ReSharper disable once UnusedVariable
-            foreach (var target in ObjectManager.Get<Obj_AI_Hero>().Where(target => target.IsValidTarget(W.Range)).Where(target => target.HasBuff("", true)))
+            foreach (var target in ObjectManager.Get<Obj_AI_Hero>().Where(target => target.IsValidTarget(W.Range)).Where(target => target.HasBuff("kennenmarkofstorm", true)))
             {
                 W.Cast();
             }

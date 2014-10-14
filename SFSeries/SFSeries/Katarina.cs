@@ -24,7 +24,6 @@
 
 using LeagueSharp;
 using LeagueSharp.Common;
-using LX_Orbwalker;
 using SharpDX;
 using System;
 using System.Collections.Generic;
@@ -42,7 +41,7 @@ namespace SFSeries
         #region Declares
 
         //Orbwalker instance
-        public static LXOrbwalker Orbwalker;
+        public static Orbwalking.Orbwalker Orbwalker;
 
         //Spells
         public static List<Spell> SpellList = new List<Spell>();
@@ -83,9 +82,9 @@ namespace SFSeries
             Config = new Menu("SFSeries", "SFSeries", true);
 
             //Orbwalker submenu            
-            var orbwalkMenu = new Menu("Orbwalker", "Orbwalker");
-            LXOrbwalker.AddToMenu(orbwalkMenu);
-            Config.AddSubMenu(orbwalkMenu);
+            var orbwalkerMenu = new Menu("LX Orbwalker", "LX_Orbwalker");
+            Orbwalker = new Orbwalking.Orbwalker(orbwalkerMenu);
+            Config.AddSubMenu(orbwalkerMenu);
             //Add the targer selector to the menu.
             var targetSelectorMenu = new Menu("Target Selector", "Target Selector");
             SimpleTs.AddToMenu(targetSelectorMenu);
@@ -132,7 +131,7 @@ namespace SFSeries
             //Add the events we are going to use
             Game.OnGameUpdate += Game_OnGameUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
-            LXOrbwalker.BeforeAttack += LXOrbwalker_BeforeAttack;
+            Orbwalking.BeforeAttack += LXOrbwalker_BeforeAttack;
 
 
 
@@ -140,10 +139,10 @@ namespace SFSeries
         #endregion
 
         #region BeforeAttack
-        static void LXOrbwalker_BeforeAttack(LXOrbwalker.BeforeAttackEventArgs args)
+        static void LXOrbwalker_BeforeAttack(Orbwalking.BeforeAttackEventArgs args)
         {
             var target = SimpleTs.GetTarget(E.Range, SimpleTs.DamageType.Magical);
-            if (LXOrbwalker.CurrentMode != LXOrbwalker.Mode.Combo) return;
+            if (Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Combo) return;
             if (!Config.Item("ProcQ").GetValue<bool>()) return;
             Q.CastOnUnit(target, Config.Item("QNFE").GetValue<bool>());
         }
@@ -160,15 +159,15 @@ namespace SFSeries
                 ObjectManager.Player.IssueOrder(GameObjectOrder.MoveTo, ObjectManager.Player); // Cancels ult
             }
             var useQks = Config.Item("KillstealQ").GetValue<bool>() && Q.IsReady();
-            switch (LXOrbwalker.CurrentMode)
+            switch (Orbwalker.ActiveMode)
             {
-                case LXOrbwalker.Mode.Combo:
+                case Orbwalking.OrbwalkingMode.Combo:
                     Combo();
                     break;
-                case LXOrbwalker.Mode.LaneFreeze:
+                case Orbwalking.OrbwalkingMode.Mixed:
                     Farm();
                     break;
-                case LXOrbwalker.Mode.LaneClear:
+                case Orbwalking.OrbwalkingMode.LaneClear:
                     WaveClear();
                     break;
             }
@@ -193,7 +192,7 @@ namespace SFSeries
         #region Farm
         private static void Farm() // Credits TC-CREW
         {
-            if (!LXOrbwalker.CanMove()) return;
+            if (!Orbwalking.CanMove(40)) return;
             var allMinions = MinionManager.GetMinions(ObjectManager.Player.ServerPosition, Q.Range);
             var useQ = Config.Item("UseQFarm").GetValue<bool>();
             var useW = Config.Item("UseWFarm").GetValue<bool>();
@@ -241,7 +240,6 @@ namespace SFSeries
         #region Combo
         private static void Combo()
         {
-            LXOrbwalker.SetAttack(true);
             var target = SimpleTs.GetTarget(E.Range, SimpleTs.DamageType.Magical);
             if (target == null) return;
 
