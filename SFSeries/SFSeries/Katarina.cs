@@ -98,7 +98,7 @@ namespace SFSeries
             Config.SubMenu("Combo").AddItem(new MenuItem("UseWCombo", "Use W").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseECombo", "Use E").SetValue(true));
             Config.SubMenu("Combo").AddItem(new MenuItem("UseRCombo", "Use R").SetValue(true));
-            Config.SubMenu("Combo").AddItem(new MenuItem("ProcQ", "Proc Q").SetValue(true));
+            Config.SubMenu("Combo").AddItem(new MenuItem("ProcQ", "Proc Q").SetValue(false));
 
             Config.AddSubMenu(new Menu("Farm", "Farm")); // creds tc-crew
             Config.SubMenu("Farm")
@@ -117,6 +117,7 @@ namespace SFSeries
             // Misc
             Config.AddSubMenu(new Menu("Misc", "Misc"));
             Config.SubMenu("Misc").AddItem(new MenuItem("KillstealQ", "Killsteal with Q").SetValue(true));
+            Config.SubMenu("Misc").AddItem(new MenuItem("KillstealE", "Killsteal with E").SetValue(true));
             Config.SubMenu("Misc").AddItem(new MenuItem("Escape", "Escape").SetValue(new KeyBind("G".ToCharArray()[0], KeyBindType.Press)));
 
             // Drawings
@@ -172,6 +173,7 @@ namespace SFSeries
                 }*/
             
             var useQks = Config.Item("KillstealQ").GetValue<bool>() && Q.IsReady();
+            var useEks = Config.Item("KillstealW").GetValue<bool>() && Q.IsReady();
             switch (Orbwalker.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.Combo:
@@ -190,7 +192,17 @@ namespace SFSeries
             Escape();
             AlwaysW();
             if(useQks)
-            Killsteal();
+                Killsteal();
+            if (useEks)
+                KillstealE();
+        }
+
+        private static void KillstealE()
+        {
+            foreach (var player in from player in ObjectManager.Get<Obj_AI_Hero>() where !player.IsMe where player.IsValidTarget(E.Range) where _player.GetSpellDamage(player, SpellSlot.E) > player.Health select player)
+            {
+                E.CastOnUnit(player, Config.Item("QNFE").GetValue<bool>());
+            }
         }
 
         private static void AlwaysW()
@@ -282,7 +294,7 @@ namespace SFSeries
         {
             var target = SimpleTs.GetTarget(E.Range, SimpleTs.DamageType.Magical);
             if (target == null) return;
-            if (ObjectManager.Player.Distance(target) < Q.Range && Q.IsReady())
+            if (ObjectManager.Player.Distance(target) < Q.Range && Q.IsReady() && !Config.Item("ProcQ").GetValue<bool>())
                 Q.CastOnUnit(target, true);
 
             if (ObjectManager.Player.Distance(target) < E.Range && E.IsReady())
@@ -371,30 +383,13 @@ namespace SFSeries
         #endregion
 
         #region GetDamage
-        private static double GetDamage(Obj_AI_Base enemy) // Creds to TC-Crew
-        {
-            var damage = 0d;
-
-            if (Q.IsReady())
-                damage += ObjectManager.Player.GetSpellDamage(enemy, SpellSlot.Q);
-
-            if (W.IsReady())
-                damage += ObjectManager.Player.GetSpellDamage(enemy, SpellSlot.W);
-
-            if (E.IsReady())
-                damage += ObjectManager.Player.GetSpellDamage(enemy, SpellSlot.E);
-
-            if (R.IsReady())
-                damage += ObjectManager.Player.GetSpellDamage(enemy, SpellSlot.R, 1);
-            return (float)damage;
-        }
 
         public static double CalculateDamageDrawing(Obj_AI_Base target)
         {
             double totaldamage = 0;
             if (Q.IsReady() && (W.IsReady() || E.IsReady() || R.IsReady()))
             {
-                totaldamage += _player.GetSpellDamage(target, SpellSlot.Q);
+                totaldamage += _player.GetSpellDamage(target, SpellSlot.Q, 2);
             }
             if (E.IsReady() && W.IsReady())
             {
@@ -406,7 +401,7 @@ namespace SFSeries
             }
             if (R.IsReady())
             {
-                totaldamage += _player.GetSpellDamage(target, SpellSlot.R);
+                totaldamage += _player.GetSpellDamage(target, SpellSlot.R,1);
             }
             if (!Q.IsReady())
             {
