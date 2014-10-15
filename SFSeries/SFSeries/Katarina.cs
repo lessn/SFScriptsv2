@@ -70,7 +70,7 @@ namespace SFSeries
             W = new Spell(SpellSlot.W, 375);
             E = new Spell(SpellSlot.E, 700);
             R = new Spell(SpellSlot.R, 550);
-
+            Items.Item DFG;
 
 
             Game.PrintChat("Katarina Loaded! By iSnorflake V2");
@@ -196,7 +196,8 @@ namespace SFSeries
             if(useQks)
                 Killsteal();
             if (useEks)
-                KillstealE();
+               KillstealE();
+
         }
 
         private static void IssueMoveComand()
@@ -233,10 +234,10 @@ namespace SFSeries
             var useW = Config.Item("UseWFarm").GetValue<bool>();
             if (useQ && Q.IsReady())
             {
-                foreach (var minion in from minion in allMinions where minion != null where _player.Distance3D(minion) < Q.Range where _player.GetSpellDamage(minion, SpellSlot.Q) > minion.Health select minion)
+                foreach (var minion in from minion in allMinions where minion.Distance(_player) < Q.Range let PredictedHealth = HealthPrediction.GetHealthPrediction(minion,
+                    (int) _player.Distance(minion)*1800, 50) where PredictedHealth > 0 && PredictedHealth < 0.75*_player.GetSpellDamage(minion, SpellSlot.Q) select minion)
                 {
                     Q.CastOnUnit(minion);
-                    return;
                 }
             }
             else if (useW && W.IsReady())
