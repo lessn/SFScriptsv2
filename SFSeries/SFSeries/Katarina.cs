@@ -311,7 +311,7 @@ namespace SFSeries
             var finalVector = basePos + (newPos.Normalized() * (560));
             var movePos = basePos + (newPos.Normalized() * (100));
             if (!Config.Item("Escape").GetValue<KeyBind>().Active) return;
-            //ObjectManager.Player.IssueOrder(GameObjectOrder.MoveTo, movePos.To3D());
+            ObjectManager.Player.IssueOrder(GameObjectOrder.MoveTo, movePos.To3D());
             if (!E.IsReady()) return;
             var castWard = true;
             foreach (var esc in ObjectManager.Get<Obj_AI_Base>().Where(esc => esc.Distance(ObjectManager.Player) <= E.Range))
@@ -373,15 +373,6 @@ namespace SFSeries
                 damage += ObjectManager.Player.GetSpellDamage(enemy, SpellSlot.R, 1);
             return (float)damage;
         }
-        private static bool IsEnemyInRange() // Checks if an enemy is in range of my ultimate.
-        {
-            if (ObjectManager.Get<Obj_AI_Hero>().Any(player => player.IsValidTarget(R.Range)))
-            {
-                return true;
-            }
-            return false;
-        }
-
 
     }
 }
