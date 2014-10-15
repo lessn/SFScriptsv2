@@ -172,8 +172,11 @@ namespace SFSeries
                 case Orbwalking.OrbwalkingMode.Combo:
                     Combo();
                     break;
-                case Orbwalking.OrbwalkingMode.Mixed:
+                case Orbwalking.OrbwalkingMode.LastHit:
                     Farm();
+                    break;
+                    case Orbwalking.OrbwalkingMode.Mixed:
+                    Harras();
                     break;
                 case Orbwalking.OrbwalkingMode.LaneClear:
                     WaveClear();
@@ -251,8 +254,7 @@ namespace SFSeries
             var target = SimpleTs.GetTarget(E.Range, SimpleTs.DamageType.Magical);
             if (target == null) return;
 
-            if (GetDamage(target) > target.Health)
-            {
+            
                 if (!_player.IsChannelingImportantSpell())
                 {
 
@@ -266,21 +268,25 @@ namespace SFSeries
                 if (!Q.IsReady() && R.IsReady() && _player.Distance(target) < (R.Range - 200))
                 R.Cast();
                 
-            }
-            else
-            {
-                if (ObjectManager.Player.Distance(target) < Q.Range && Q.IsReady())
-                    Q.CastOnUnit(target, true);
+            
 
-                if (ObjectManager.Player.Distance(target) < E.Range && E.IsReady())
-                    E.CastOnUnit(target);
-
-                if (ObjectManager.Player.Distance(target) < W.Range && W.IsReady())
-                    W.Cast();
-            }
         }
         #endregion
 
+        private static void Harras()
+        {
+            var target = SimpleTs.GetTarget(E.Range, SimpleTs.DamageType.Magical);
+            if (target == null) return;
+            if (ObjectManager.Player.Distance(target) < Q.Range && Q.IsReady())
+                Q.CastOnUnit(target, true);
+
+            if (ObjectManager.Player.Distance(target) < E.Range && E.IsReady())
+                E.CastOnUnit(target);
+
+            if (ObjectManager.Player.Distance(target) < W.Range && W.IsReady())
+                W.Cast();
+            
+        }
         #region OnDraw
         private static void Drawing_OnDraw(EventArgs args)
         {
