@@ -163,15 +163,6 @@ namespace SFSeries
         private static void Game_OnGameUpdate(EventArgs args)
         {
             if (_player.IsDead) return;
-            /*if (Utility.CountEnemysInRange((int) R.Range) >= 1) // If an enemy is in range and im ultimating - dont cancel the ult before their dead
-                if (ObjectManager.Player.IsChannelingImportantSpell()) return;
-                else
-                {
-                    if (_player.IsChannelingImportantSpell())
-                    {
-                        _player.IssueOrder(GameObjectOrder.MoveTo, _player.Position);
-                    }   
-                }*/
             if(Config.Item("UltCancel").GetValue<bool>())
             if(_player.IsChannelingImportantSpell() && CountEnemiesNearPosition(_player.Position,R.Range)==0) IssueMoveComand();
             var useQks = Config.Item("KillstealQ").GetValue<bool>() && Q.IsReady();
@@ -414,14 +405,14 @@ namespace SFSeries
             }
             if (R.IsReady())
             {
-                totaldamage += _player.GetSpellDamage(target, SpellSlot.R,1);
+                totaldamage += _player.GetSpellDamage(target, SpellSlot.R);
             }
             if (!Q.IsReady())
             {
                 totaldamage += _player.CalcDamage(target, Damage.DamageType.Magical, (ObjectManager.Player.Spellbook.GetSpell(SpellSlot.Q).Level * 15) + (0.15 * ObjectManager.Player.FlatMagicDamageMod));
             }
             if (Dfg != null)
-            return (Dfg.IsReady() ? totaldamage * 1.2 : totaldamage *1);
+            return (Dfg.IsReady() ? totaldamage * 1.2f : totaldamage * 1f);
             return totaldamage;
         }
         protected static int CountEnemiesNearPosition(Vector3 pos, float range)
