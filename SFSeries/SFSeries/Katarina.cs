@@ -119,6 +119,7 @@ namespace SFSeries
             Config.SubMenu("Misc").AddItem(new MenuItem("KillstealQ", "Killsteal with Q").SetValue(true));
             Config.SubMenu("Misc").AddItem(new MenuItem("KillstealE", "Killsteal with E").SetValue(true));
             Config.SubMenu("Misc").AddItem(new MenuItem("Escape", "Escape").SetValue(new KeyBind("G".ToCharArray()[0], KeyBindType.Press)));
+            Config.SubMenu("Misc").AddItem(new MenuItem("UltCancel", "Ult Cancel(EXPERIMENTAL)").SetValue(true));
 
             // Drawings
             Config.AddSubMenu(new Menu("Drawings", "Drawings"));
@@ -171,7 +172,8 @@ namespace SFSeries
                         _player.IssueOrder(GameObjectOrder.MoveTo, _player.Position);
                     }   
                 }*/
-            
+            if(Config.Item("UltCancel").GetValue<bool>())
+            if(_player.IsChannelingImportantSpell() && CountEnemiesNearPosition(_player.Position,R.Range)==0) IssueMoveComand();
             var useQks = Config.Item("KillstealQ").GetValue<bool>() && Q.IsReady();
             var useEks = Config.Item("KillstealW").GetValue<bool>() && Q.IsReady();
             switch (Orbwalker.ActiveMode)
@@ -195,6 +197,11 @@ namespace SFSeries
                 Killsteal();
             if (useEks)
                 KillstealE();
+        }
+
+        private static void IssueMoveComand()
+        {
+            _player.IssueOrder(GameObjectOrder.MoveTo, _player.Position);
         }
 
         private static void KillstealE()
@@ -409,6 +416,13 @@ namespace SFSeries
             }
             return totaldamage;
         }
+        protected static int CountEnemiesNearPosition(Vector3 pos, float range)
+        {
+            return
+                ObjectManager.Get<Obj_AI_Hero>().Count(
+                    hero => hero.IsEnemy && !hero.IsDead && hero.IsValid && hero.Distance(pos) <= range);
+        }
+        
     }
 }
         #endregion
