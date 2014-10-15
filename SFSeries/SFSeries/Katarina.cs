@@ -49,7 +49,7 @@ namespace SFSeries
         public static Spell W;
         public static Spell E;
         public static Spell R;
-
+        public static Items.Item Dfg;
         //Menu
         public static Menu Config;
         private static Obj_AI_Hero _player;
@@ -70,8 +70,8 @@ namespace SFSeries
             W = new Spell(SpellSlot.W, 375);
             E = new Spell(SpellSlot.E, 700);
             R = new Spell(SpellSlot.R, 550);
-            Items.Item DFG;
 
+            Dfg = new Items.Item(3128, 750f);
 
             Game.PrintChat("Katarina Loaded! By iSnorflake V2");
             SpellList.Add(Q);
@@ -175,7 +175,7 @@ namespace SFSeries
             if(Config.Item("UltCancel").GetValue<bool>())
             if(_player.IsChannelingImportantSpell() && CountEnemiesNearPosition(_player.Position,R.Range)==0) IssueMoveComand();
             var useQks = Config.Item("KillstealQ").GetValue<bool>() && Q.IsReady();
-            var useEks = Config.Item("KillstealW").GetValue<bool>() && Q.IsReady();
+            var useEks = Config.Item("KillstealE").GetValue<bool>() && E.IsReady();
             switch (Orbwalker.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.Combo:
@@ -234,9 +234,9 @@ namespace SFSeries
             var useW = Config.Item("UseWFarm").GetValue<bool>();
             if (useQ && Q.IsReady())
             {
-                foreach (var minion in from minion in allMinions where minion.Distance(_player) < Q.Range let PredictedHealth = HealthPrediction.GetHealthPrediction(minion,
-                    (int) _player.Distance(minion)*1800, 50) where PredictedHealth > 0 && PredictedHealth < 0.75*_player.GetSpellDamage(minion, SpellSlot.Q) select minion)
+                foreach (var minion in from minion in allMinions where minion.Distance(_player) < Q.Range let predictedHealth = HealthPrediction.GetHealthPrediction(minion, (int)(Q.Delay + (minion.Distance(_player) / Q.Speed)) * 1000) where predictedHealth > 0f && predictedHealth < 0.75 * Q.GetDamage(minion) select minion)
                 {
+
                     Q.CastOnUnit(minion);
                 }
             }
@@ -279,11 +279,16 @@ namespace SFSeries
             var target = SimpleTs.GetTarget(E.Range, SimpleTs.DamageType.Magical);
             if (target == null) return;
 
-            
-                if (!_player.IsChannelingImportantSpell())
-                {
 
-                    if (Q.IsReady() && _player.Distance(target) < Q.Range + target.BoundingRadius && !Config.Item("ProcQ").GetValue<bool>())
+            if (!_player.IsChannelingImportantSpell())
+            {
+                if (Dfg != null)
+                {
+                
+                if (Dfg.IsReady())
+                    Dfg.Cast(target);
+                }
+            if (Q.IsReady() && _player.Distance(target) < Q.Range + target.BoundingRadius && !Config.Item("ProcQ").GetValue<bool>())
                         Q.CastOnUnit(target, Config.Item("QNFE").GetValue<bool>());
                     if (E.IsReady() && _player.Distance(target) < E.Range + target.BoundingRadius)
                         E.CastOnUnit(target, Config.Item("QNFE").GetValue<bool>());
@@ -395,7 +400,7 @@ namespace SFSeries
         public static double CalculateDamageDrawing(Obj_AI_Base target)
         {
             double totaldamage = 0;
-            if (Q.IsReady() && (W.IsReady() || E.IsReady() || R.IsReady()))
+            if (Q.IsReady())
             {
                 totaldamage += _player.GetSpellDamage(target, SpellSlot.Q, 2);
             }
@@ -415,6 +420,8 @@ namespace SFSeries
             {
                 totaldamage += _player.CalcDamage(target, Damage.DamageType.Magical, (ObjectManager.Player.Spellbook.GetSpell(SpellSlot.Q).Level * 15) + (0.15 * ObjectManager.Player.FlatMagicDamageMod));
             }
+            if (Dfg != null)
+            return (Dfg.IsReady() ? totaldamage * 1.2 : totaldamage *1);
             return totaldamage;
         }
         protected static int CountEnemiesNearPosition(Vector3 pos, float range)
