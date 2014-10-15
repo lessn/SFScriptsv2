@@ -123,6 +123,10 @@ namespace SFSeries
             Config.AddSubMenu(new Menu("Drawings", "Drawings"));
             Config.SubMenu("Drawings").AddItem(new MenuItem("QRange", "Q Range").SetValue(new Circle(true, Color.FromArgb(150, Color.DodgerBlue))));
             Config.SubMenu("Drawings").AddItem(new MenuItem("ERange", "E Range").SetValue(new Circle(true, Color.FromArgb(150, Color.OrangeRed))));
+            var dmgAfterComboItem = new MenuItem("DamageAfterCombo", "Draw damage after Combo").SetValue(true);
+            Utility.HpBarDamageIndicator.DamageToUnit += hero => (float)CalculateDamageDrawing(hero);
+
+            Utility.HpBarDamageIndicator.Enabled = dmgAfterComboItem.GetValue<bool>();
             Config.AddSubMenu(new Menu("Exploits", "Exploits"));
             Config.SubMenu("Exploits").AddItem(new MenuItem("QNFE", "Q No-Face").SetValue(true));
             // Config.SubMenu("Drawings").AddItem(new MenuItem("ERange", "E Range").SetValue(new Circle(true, Color.FromArgb(150, Color.DodgerBlue))));
@@ -374,6 +378,31 @@ namespace SFSeries
             return (float)damage;
         }
 
+        public static double CalculateDamageDrawing(Obj_AI_Base target)
+        {
+            double totaldamage = 0;
+            if (Q.IsReady() && (W.IsReady() || E.IsReady() || R.IsReady()))
+            {
+                totaldamage += _player.GetSpellDamage(target, SpellSlot.Q);
+            }
+            if (E.IsReady() && W.IsReady())
+            {
+                totaldamage += _player.GetSpellDamage(target, SpellSlot.W);
+            }
+            if (E.IsReady())
+            {
+                totaldamage += _player.GetSpellDamage(target, SpellSlot.E);
+            }
+            if (R.IsReady())
+            {
+                totaldamage += _player.GetSpellDamage(target, SpellSlot.R);
+            }
+            if (!Q.IsReady())
+            {
+                totaldamage += _player.CalcDamage(target, Damage.DamageType.Magical, (ObjectManager.Player.Spellbook.GetSpell(SpellSlot.Q).Level * 15) + (0.15 * ObjectManager.Player.FlatMagicDamageMod));
+            }
+            return totaldamage;
+        }
     }
 }
         #endregion

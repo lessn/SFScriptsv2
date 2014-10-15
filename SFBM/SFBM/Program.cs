@@ -52,8 +52,8 @@ namespace SFBM
                 var r = new Random();
                 var i = r.Next(1, 9);
                 var sendmessage = _messages[i];
-                Utility.DelayAction.Add(30, (Utility.DelayAction.Callback)Game.Say("/all " + sendmessage + hero.BaseSkinName));
-                
+                Game.Say("/all " + sendmessage + hero.BaseSkinName);
+
             }
         }
     }
