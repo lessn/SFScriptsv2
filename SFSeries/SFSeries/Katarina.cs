@@ -127,6 +127,10 @@ namespace SFSeries
             Utility.HpBarDamageIndicator.DamageToUnit += hero => (float)CalculateDamageDrawing(hero);
 
             Utility.HpBarDamageIndicator.Enabled = dmgAfterComboItem.GetValue<bool>();
+            dmgAfterComboItem.ValueChanged += delegate(object sender, OnValueChangeEventArgs eventArgs)
+            {
+                Utility.HpBarDamageIndicator.Enabled = eventArgs.GetNewValue<bool>();
+            };
             Config.AddSubMenu(new Menu("Exploits", "Exploits"));
             Config.SubMenu("Exploits").AddItem(new MenuItem("QNFE", "Q No-Face").SetValue(true));
             // Config.SubMenu("Drawings").AddItem(new MenuItem("ERange", "E Range").SetValue(new Circle(true, Color.FromArgb(150, Color.DodgerBlue))));
@@ -352,10 +356,10 @@ namespace SFSeries
         }
         private static InventorySlot FindBestWardItem()
         {
-            InventorySlot slot = Items.GetWardSlot();
+            var slot = Items.GetWardSlot();
             if (slot == default(InventorySlot)) return null;
 
-            SpellDataInst sdi = GetItemSpell(slot);
+            var sdi = GetItemSpell(slot);
 
             if (sdi != default(SpellDataInst) && sdi.State == SpellState.Ready)
             {
