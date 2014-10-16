@@ -30,10 +30,16 @@ namespace SFSeries
                 case "Kennen": // Currently disabled, not finished yet
                     new Kennen();
                     break;
+
+                
                 default:
                     Game.PrintChat("This champion is not supported by SFSeries");
                     break;
             }
+        }
+        public static void PrintMessage(string msg) // Credits to ChewyMoon, and his Brain.exe
+        {
+            Game.PrintChat("<font color=\"#6699ff\"><b>SFSeries: </b></font> <font color=\"#FFFFFF\">" + msg + "</font>");
         }
     }
 }

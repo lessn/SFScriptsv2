@@ -23,7 +23,6 @@
 
 #region References
 
-using DevCommom;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
@@ -54,7 +53,6 @@ namespace SFSeries
         public static Items.Item Dfg;
         public static bool IsChanneling;
         public static int Count;
-        public static SkinManager SkinManager;
         //Menu
         public static Menu Config;
         private static Obj_AI_Hero _player;
@@ -78,7 +76,6 @@ namespace SFSeries
             R = new Spell(SpellSlot.R, 550);
 
             Dfg = new Items.Item(3128, 750f);
-            SkinManager = new SkinManager();
             PrintFancy("Loaded!");
             SpellList.Add(Q);
             SpellList.Add(W);
