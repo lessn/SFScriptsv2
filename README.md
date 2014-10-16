@@ -1,44 +1,7 @@
 SFScriptsv2
 ===========
-
-##SFSeries
-
-###SFAhri
-![SFAhri](http://i.imgur.com/HZ1zIzv.gif)
-  
-####Features:
-  
-  Basic combo
-  
-  Best prodiction.
-  
-  Lag-free circles.
-  
-  Easy user customability
-  
-  
-####Credits
-  
-  Snorflake
-  
- 
+###Home of
 ###SFKatarina
 ![SFKatarina](http://i.imgur.com/K5UItRb.gif)
 
-####Features:
-  
-  Perfect Combo
-  
-  Pentakill functionality (Ult canceling)
-  
-  Spell farm
-  
-  Easily customizable
-  
-
-####Credits:
-  
-  Snorflake - Making it
-  
-  Fluxy - Re-writing ward jump & Teaching me about vectors and movement packets
-  
+You can see the updated info here: http://www.joduska.me/forum/topic/857-sfseries-by-snorflake-home-of-the-infamous-sfkatarina/
