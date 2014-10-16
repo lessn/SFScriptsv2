@@ -20,8 +20,10 @@
 
 
 
-        #region References
 
+#region References
+
+using DevCommom;
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
@@ -52,6 +54,7 @@ namespace SFSeries
         public static Items.Item Dfg;
         public static bool IsChanneling;
         public static int Count;
+        public static SkinManager SkinManager;
         //Menu
         public static Menu Config;
         private static Obj_AI_Hero _player;
@@ -67,6 +70,7 @@ namespace SFSeries
         #region OnGameLoad
         static void Game_OnGameLoad()
         {
+            //InitializeSkinManager();
             _player = ObjectManager.Player;
             Q = new Spell(SpellSlot.Q, 675);
             W = new Spell(SpellSlot.W, 375);
@@ -74,8 +78,8 @@ namespace SFSeries
             R = new Spell(SpellSlot.R, 550);
 
             Dfg = new Items.Item(3128, 750f);
-
-            Game.PrintChat("Katarina Loaded! By iSnorflake V2");
+            SkinManager = new SkinManager();
+            PrintFancy("Loaded!");
             SpellList.Add(Q);
             SpellList.Add(W);
             SpellList.Add(E);
@@ -140,7 +144,9 @@ namespace SFSeries
             Config.AddSubMenu(new Menu("Exploits", "Exploits"));
             Config.SubMenu("Exploits").AddItem(new MenuItem("QNFE", "Q No-Face").SetValue(true));
             // Config.SubMenu("Drawings").AddItem(new MenuItem("ERange", "E Range").SetValue(new Circle(true, Color.FromArgb(150, Color.DodgerBlue))));
-
+            
+            //SkinManager.AddToMenu(ref Config);
+           
             Config.AddToMainMenu();
             //Add the events we are going to use
             Game.OnGameUpdate += Game_OnGameUpdate;
@@ -165,7 +171,7 @@ namespace SFSeries
             IsChanneling = true;
             Orbwalker.SetMovement(false);
             Orbwalker.SetAttack(false);
-            Utility.DelayAction.Add((int) 1, () => IsChanneling = false);
+            Utility.DelayAction.Add(1, () => IsChanneling = false);
         }
         #endregion
 
@@ -182,6 +188,8 @@ namespace SFSeries
         #region OnGameUpdate
         private static void Game_OnGameUpdate(EventArgs args)
         {
+            //SkinManager.Update();
+            
             if (_player.IsDead) return;
             if (Config.Item("UltCancel").GetValue<bool>())
             {
@@ -457,7 +465,10 @@ namespace SFSeries
                 ObjectManager.Get<Obj_AI_Hero>().Count(
                     hero => hero.IsEnemy && !hero.IsDead && hero.IsValid && hero.Distance(pos) <= range);
         }
-        
+        public static void PrintFancy(string msg) // Credits to ChewyMoon, and his Brain.exe
+        {
+            Game.PrintChat("<font color=\"#6699ff\"><b>SFSeries: </b></font> <font color=\"#FFFFFF\">" + msg + "</font>");
+        }
     }
 }
         #endregion
