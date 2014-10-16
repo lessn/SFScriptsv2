@@ -198,7 +198,7 @@ namespace SFSeries
 
         private static void KillstealE()
         {
-            foreach (var player in from player in ObjectManager.Get<Obj_AI_Hero>() where !player.IsMe where player.IsValidTarget(E.Range) where _player.GetSpellDamage(player, SpellSlot.E) > player.Health select player)
+            foreach (var player in (from player in ObjectManager.Get<Obj_AI_Hero>() where !player.IsMe where player.IsValidTarget(E.Range) where _player.GetSpellDamage(player, SpellSlot.E) > player.Health select player).Where(player => E.IsReady()))
             {
                 E.CastOnUnit(player, Config.Item("QNFE").GetValue<bool>());
             }
@@ -206,9 +206,8 @@ namespace SFSeries
 
         private static void AlwaysW()
         {
-            if (!W.IsReady()) return;
 // ReSharper disable once UnusedVariable
-            foreach (var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(W.Range)))
+            foreach (var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(W.Range)).Where(hero => W.IsReady()))
             {
                 W.Cast();
             }
