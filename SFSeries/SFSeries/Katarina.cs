@@ -120,6 +120,7 @@ namespace SFSeries
             Config.SubMenu("Misc").AddItem(new MenuItem("KillstealE", "Killsteal with E").SetValue(true));
             Config.SubMenu("Misc").AddItem(new MenuItem("Escape", "Escape").SetValue(new KeyBind("G".ToCharArray()[0], KeyBindType.Press)));
             Config.SubMenu("Misc").AddItem(new MenuItem("UltCancel", "Ult Cancel(EXPERIMENTAL)").SetValue(true));
+            Config.SubMenu("Misc").AddItem(new MenuItem("AlwaysW", "Auto W").SetValue(true));
 
             // Drawings
             Config.AddSubMenu(new Menu("Drawings", "Drawings"));
@@ -167,6 +168,7 @@ namespace SFSeries
             if(_player.IsChannelingImportantSpell() && CountEnemiesNearPosition(_player.Position,R.Range)==0) IssueMoveComand();
             var useQks = Config.Item("KillstealQ").GetValue<bool>() && Q.IsReady();
             var useEks = Config.Item("KillstealE").GetValue<bool>() && E.IsReady();
+            var useWA = Config.Item("AlwaysW").GetValue<bool>() && W.IsReady();
             switch (Orbwalker.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.Combo:
@@ -183,6 +185,7 @@ namespace SFSeries
                     break;
             }
             Escape();
+            if(useWA)
             AlwaysW();
             if(useQks)
                 Killsteal();
