@@ -338,11 +338,11 @@ namespace SFSeries
         {
             var target = SimpleTs.GetTarget(E.Range, SimpleTs.DamageType.Magical);
             if (target == null) return;
-            if (ObjectManager.Player.Distance(target) < Q.Range && Q.IsReady() && !Config.Item("ProcQ").GetValue<bool>())
+            if (ObjectManager.Player.Distance(target) < Q.Range && Q.IsReady())
                 Q.CastOnUnit(target, true);
 
-            if (ObjectManager.Player.Distance(target) < E.Range && E.IsReady())
-                E.CastOnUnit(target);
+            /*if (ObjectManager.Player.Distance(target) < E.Range && E.IsReady())
+                E.CastOnUnit(target);*/
 
             if (ObjectManager.Player.Distance(target) < W.Range && W.IsReady())
                 W.Cast();
