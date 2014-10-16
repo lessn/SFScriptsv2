@@ -35,9 +35,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DevCommom">
-      <HintPath>C:\Users\Snorflake\Downloads\LeagueSharp\System\DevCommom.dll</HintPath>
-    </Reference>
     <Reference Include="LeagueSharp">
       <HintPath>C:\Users\Snorflake\Downloads\LeagueSharp\System\LeagueSharp.dll</HintPath>
     </Reference>
@@ -66,7 +63,6 @@
     <Compile Include="Kennen.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Yorick.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

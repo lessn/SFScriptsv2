@@ -68,7 +68,6 @@ namespace SFSeries
         #region OnGameLoad
         static void Game_OnGameLoad()
         {
-            //InitializeSkinManager();
             _player = ObjectManager.Player;
             Q = new Spell(SpellSlot.Q, 675);
             W = new Spell(SpellSlot.W, 375);
