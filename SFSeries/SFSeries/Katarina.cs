@@ -50,6 +50,8 @@ namespace SFSeries
         public static Spell E;
         public static Spell R;
         public static Items.Item Dfg;
+        public static bool IsChanneling;
+        public static int Count;
         //Menu
         public static Menu Config;
         private static Obj_AI_Hero _player;
@@ -143,10 +145,27 @@ namespace SFSeries
             //Add the events we are going to use
             Game.OnGameUpdate += Game_OnGameUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
+
             Orbwalking.BeforeAttack += LXOrbwalker_BeforeAttack;
+            Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
+            Game.OnGameSendPacket += Game_OnGameSendPacket;
 
+        }
 
+        static void Game_OnGameSendPacket(GamePacketEventArgs args)
+        {
+            if (args.PacketData[0] != 0x72 || !_player.HasBuff("katarinarsound",true) || Count >= 2) return;
+            Count += 1;
+            args.Process = false;
+        }
 
+        static void Obj_AI_Base_OnProcessSpellCast(Obj_AI_Base sender, GameObjectProcessSpellCastEventArgs args)
+        {
+            if (!sender.IsMe || args.SData.Name != "KatarinaR") return;
+            IsChanneling = true;
+            Orbwalker.SetMovement(false);
+            Orbwalker.SetAttack(false);
+            Utility.DelayAction.Add((int) 1, () => IsChanneling = false);
         }
         #endregion
 
@@ -164,11 +183,26 @@ namespace SFSeries
         private static void Game_OnGameUpdate(EventArgs args)
         {
             if (_player.IsDead) return;
-            if(Config.Item("UltCancel").GetValue<bool>())
-            if(_player.IsChannelingImportantSpell() && CountEnemiesNearPosition(_player.Position,R.Range)==0) IssueMoveComand();
+            if (Config.Item("UltCancel").GetValue<bool>())
+            {
+                if (_player.HasBuff("katarinarsound", true) && Utility.CountEnemysInRange((int) R.Range) == 0)
+                    IssueMoveComand();
+            }
+            if (_player.HasBuff("katarinarsound",true))
+            {
+                Orbwalker.SetMovement(false);
+                Orbwalker.SetAttack(false);
+            }
+            if (!_player.HasBuff("katarinarsound",true) && !IsChanneling)
+            {
+                Count = 0;
+                Orbwalker.SetMovement(true);
+                Orbwalker.SetAttack(true);
+            }
+            if(IsChanneling) return;
             var useQks = Config.Item("KillstealQ").GetValue<bool>() && Q.IsReady();
             var useEks = Config.Item("KillstealE").GetValue<bool>() && E.IsReady();
-            var useWA = Config.Item("AlwaysW").GetValue<bool>() && W.IsReady();
+            var useWa = Config.Item("AlwaysW").GetValue<bool>() && W.IsReady();
             switch (Orbwalker.ActiveMode)
             {
                 case Orbwalking.OrbwalkingMode.Combo:
@@ -185,7 +219,7 @@ namespace SFSeries
                     break;
             }
             Escape();
-            if(useWA)
+            if(useWa)
             AlwaysW();
             if(useQks)
                 Killsteal();
@@ -407,7 +441,7 @@ namespace SFSeries
             }
             if (R.IsReady())
             {
-                totaldamage += _player.GetSpellDamage(target, SpellSlot.R);
+                totaldamage += _player.GetSpellDamage(target, SpellSlot.R) * 8;
             }
             if (!Q.IsReady())
             {
