@@ -9,6 +9,7 @@ namespace SFSeries
         public static Menu Menu;
         public static Spell Q, W, E;
         public static Orbwalking.Orbwalker Orbwalker;
+        public static bool delayed = false;
         public Singed()
         {
             Game_OnGameLoad();
@@ -35,7 +36,7 @@ namespace SFSeries
             Menu.AddItem(new MenuItem("spam", "LAUGH SPAM MUAHAHAH").SetValue(true));
             Menu.AddToMainMenu();
 
-            Game.PrintChat("Singed exploit by Snorflake loaded!");
+            Program.PrintMessage("Singed loaded!");
             Game.OnGameUpdate += Game_OnGameUpdate;
         }
 
@@ -72,5 +73,14 @@ namespace SFSeries
             Packet.C2S.Emote.Encoded(new Packet.C2S.Emote.Struct(2)).Send();
             Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(Game.CursorPos.X, Game.CursorPos.Y)).Send();
         }
+        static void danceSpam()
+        {
+            Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(Game.CursorPos.X, Game.CursorPos.Y)).Send();
+            if (delayed) return;
+            Packet.C2S.Emote.Encoded(new Packet.C2S.Emote.Struct(2)).Send();
+            delayed = true;
+            Utility.DelayAction.Add((int) 75, () => delayed = false);
+        }
+        
     }
 }

@@ -26,6 +26,7 @@
 using LeagueSharp;
 using LeagueSharp.Common;
 using SharpDX;
+using LX_Orbwalker;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,7 +43,7 @@ namespace SFSeries
         #region Declares
 
         //Orbwalker instance
-        public static Orbwalking.Orbwalker Orbwalker;
+        public static LXOrbwalker Orbwalker;
 
         //Spells
         public static List<Spell> SpellList = new List<Spell>();
@@ -85,7 +86,7 @@ namespace SFSeries
 
             //Orbwalker submenu            
             var orbwalkerMenu = new Menu("Orbwalker", "LX_Orbwalker");
-            Orbwalker = new Orbwalking.Orbwalker(orbwalkerMenu);
+            LXOrbwalker.AddToMenu(orbwalkerMenu);
             Config.AddSubMenu(orbwalkerMenu);
             //Add the targer selector to the menu.
             var targetSelectorMenu = new Menu("Target Selector", "Target Selector");
@@ -147,8 +148,7 @@ namespace SFSeries
             //Add the events we are going to use
             Game.OnGameUpdate += Game_OnGameUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
-
-            Orbwalking.BeforeAttack += LXOrbwalker_BeforeAttack;
+            LXOrbwalker.BeforeAttack += LXOrbwalker_BeforeAttack;
             Obj_AI_Base.OnProcessSpellCast += Obj_AI_Base_OnProcessSpellCast;
             Game.OnGameSendPacket += Game_OnGameSendPacket;
 
@@ -165,17 +165,18 @@ namespace SFSeries
         {
             if (!sender.IsMe || args.SData.Name != "KatarinaR") return;
             IsChanneling = true;
-            Orbwalker.SetMovement(false);
-            Orbwalker.SetAttack(false);
+            LXOrbwalker.SetMovement(false);
+
+            LXOrbwalker.SetAttack(false);
             Utility.DelayAction.Add(1, () => IsChanneling = false);
         }
         #endregion
 
         #region BeforeAttack
-        static void LXOrbwalker_BeforeAttack(Orbwalking.BeforeAttackEventArgs args)
+        static void LXOrbwalker_BeforeAttack(LXOrbwalker.BeforeAttackEventArgs beforeAttackEventArgs)
         {
             var target = SimpleTs.GetTarget(E.Range, SimpleTs.DamageType.Magical);
-            if (Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Combo) return;
+            if (LXOrbwalker.CurrentMode != LXOrbwalker.Mode.Combo) return;
             if (!Config.Item("ProcQ").GetValue<bool>()) return;
             Q.CastOnUnit(target, Config.Item("QNFE").GetValue<bool>());
         }
@@ -194,31 +195,31 @@ namespace SFSeries
             }
             if (_player.HasBuff("katarinarsound",true))
             {
-                Orbwalker.SetMovement(false);
-                Orbwalker.SetAttack(false);
+                LXOrbwalker.SetMovement(false);
+                LXOrbwalker.SetAttack(false);
             }
             if (!_player.HasBuff("katarinarsound",true) && !IsChanneling)
             {
                 Count = 0;
-                Orbwalker.SetMovement(true);
-                Orbwalker.SetAttack(true);
+                LXOrbwalker.SetMovement(true);
+                LXOrbwalker.SetAttack(true);
             }
             if(IsChanneling) return;
             var useQks = Config.Item("KillstealQ").GetValue<bool>() && Q.IsReady();
             var useEks = Config.Item("KillstealE").GetValue<bool>() && E.IsReady();
             var useWa = Config.Item("AlwaysW").GetValue<bool>() && W.IsReady();
-            switch (Orbwalker.ActiveMode)
+            switch (LXOrbwalker.CurrentMode)
             {
-                case Orbwalking.OrbwalkingMode.Combo:
+                case LXOrbwalker.Mode.Combo:
                     Combo();
                     break;
-                case Orbwalking.OrbwalkingMode.LastHit:
+                case LXOrbwalker.Mode.Lasthit:
                     Farm();
                     break;
-                    case Orbwalking.OrbwalkingMode.Mixed:
+                case LXOrbwalker.Mode.Harass:
                     Harras();
                     break;
-                case Orbwalking.OrbwalkingMode.LaneClear:
+                case LXOrbwalker.Mode.LaneClear:
                     WaveClear();
                     break;
             }

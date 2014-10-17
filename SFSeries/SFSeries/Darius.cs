@@ -2,6 +2,7 @@
 using LeagueSharp.Common;
 using System;
 using System.Linq;
+using LX_Orbwalker;
 using Color = System.Drawing.Color;
 
 namespace SFSeries
@@ -10,7 +11,6 @@ namespace SFSeries
     {
 
         //Orbwalker instance
-        public static Orbwalking.Orbwalker Orbwalker;
 
         //Spells
         public static Spell Q;
@@ -44,7 +44,7 @@ namespace SFSeries
 
             //Orbwalker submenu
             var orbwalkerMenu = new Menu("Orbwalker", "LX_Orbwalker");
-            Orbwalker = new Orbwalking.Orbwalker(orbwalkerMenu);
+            LXOrbwalker.AddToMenu(orbwalkerMenu);
             Config.AddSubMenu(orbwalkerMenu);
 
             //Add the targer selector to the menu.
@@ -72,7 +72,7 @@ namespace SFSeries
             //Add the events we are going to use
             Game.OnGameUpdate += Game_OnGameUpdate;
             Drawing.OnDraw += Drawing_OnDraw;
-            Orbwalking.AfterAttack += LXOrbwalker_AfterAttack;
+            LXOrbwalker.AfterAttack += LXOrbwalker_AfterAttack;
 
 
 
@@ -81,7 +81,7 @@ namespace SFSeries
         private static void LXOrbwalker_AfterAttack(Obj_AI_Base unit, Obj_AI_Base target)
         {
             if (!unit.IsMe ||
-                (Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Combo && Orbwalker.ActiveMode != Orbwalking.OrbwalkingMode.Mixed))
+                (LXOrbwalker.CurrentMode != LXOrbwalker.Mode.Combo && LXOrbwalker.CurrentMode != LXOrbwalker.Mode.Harass))
                 return;
             if (!(target is Obj_AI_Hero)) return;
             
@@ -93,15 +93,15 @@ namespace SFSeries
         private static void Game_OnGameUpdate(EventArgs args)
         {
             if (_player.IsDead) return;
-            switch (Orbwalker.ActiveMode)
+            switch (LXOrbwalker.CurrentMode)
             {
-                case Orbwalking.OrbwalkingMode.Combo:
+                case LXOrbwalker.Mode.Combo:
                     Combo();
                     break;
-                case Orbwalking.OrbwalkingMode.Mixed:
+                case LXOrbwalker.Mode.Harass:
                     Harras();
                     break;
-                case Orbwalking.OrbwalkingMode.LaneClear:
+                case LXOrbwalker.Mode.LaneClear:
                     LaneClear();
                     break;
             }

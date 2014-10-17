@@ -18,9 +18,6 @@ namespace SFSeries
 
             switch (ChampionName)
             {
-                case "Ahri":
-                    new Ahri();
-                    break;
                 case "Katarina":
                     new Katarina();
                     break;
@@ -35,7 +32,7 @@ namespace SFSeries
                     break;
                 
                 default:
-                    Game.PrintChat("This champion is not supported by SFSeries");
+                    PrintMessage("This champion is not supported");
                     break;
             }
         }

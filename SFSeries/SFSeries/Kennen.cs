@@ -2,6 +2,7 @@
 using LeagueSharp.Common;
 using System;
 using System.Linq;
+using LX_Orbwalker;
 
 namespace SFSeries
 {
@@ -10,7 +11,7 @@ namespace SFSeries
 
         #region Declares
                 public static string Name = "Kennen";
-                public static Orbwalking.Orbwalker Orbwalker ;
+                public static LXOrbwalker Orbwalker;
                 public static Obj_AI_Hero Player = ObjectManager.Player;
                 public static Spell Q, W, R;
                 public static Items.Item Dfg;
@@ -22,7 +23,7 @@ namespace SFSeries
                         Game_OnGameLoad();
                     }
 
-        private void Game_OnGameLoad()
+        private static void Game_OnGameLoad()
         {
             Q = new Spell(SpellSlot.Q, 1050);
             W = new Spell(SpellSlot.W, 800);
@@ -36,7 +37,7 @@ namespace SFSeries
             //moment :D
 
             var orbwalkerMenu = new Menu("Orbwalker", "LX_Orbwalker");
-            Orbwalker = new Orbwalking.Orbwalker(orbwalkerMenu);
+            LXOrbwalker.AddToMenu(orbwalkerMenu);
             Sf.AddSubMenu(orbwalkerMenu);
             //Target selector and menu  y thats all 
             var ts = new Menu("Target Selector", "Target Selector");
@@ -72,12 +73,12 @@ namespace SFSeries
 
         private static void Game_OnGameUpdate(EventArgs args)
         {
-            switch (Orbwalker.ActiveMode)
+            switch (LXOrbwalker.CurrentMode)
             {
-                case Orbwalking.OrbwalkingMode.Combo:
+                case LXOrbwalker.Mode.Combo:
                     Combo();
                     break;
-                case Orbwalking.OrbwalkingMode.Mixed:
+                case LXOrbwalker.Mode.Harass:
                     Harras();
                     break;
             }
