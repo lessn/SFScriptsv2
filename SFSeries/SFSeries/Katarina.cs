@@ -42,9 +42,6 @@ namespace SFSeries
 
         #region Declares
 
-        //Orbwalker instance
-        public static LXOrbwalker Orbwalker;
-
         //Spells
         public static List<Spell> SpellList = new List<Spell>();
         public static Spell Q;
