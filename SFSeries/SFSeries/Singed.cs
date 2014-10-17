@@ -19,7 +19,7 @@ namespace SFSeries
             Q = new Spell(SpellSlot.Q);
             W = new Spell(SpellSlot.W, 1000);
             E = new Spell(SpellSlot.E, 125);
-            W.SetSkillshot(0.5f,450f,700f,false,SkillshotType.SkillshotCircle);
+            W.SetSkillshot(0.5f,350f,700f,false,SkillshotType.SkillshotCircle);
             Menu = new Menu("SF Series", "menu", true);
 
             var orbwalkerMenu = new Menu("Orbwalker", "orbwalker");
@@ -32,6 +32,7 @@ namespace SFSeries
             Menu.AddItem(
                 new MenuItem("enabled", "Invisible Poison").SetValue(new KeyBind("T".ToCharArray()[0],
                     KeyBindType.Toggle)));
+            Menu.AddItem(new MenuItem("spam", "LAUGH SPAM MUAHAHAH").SetValue(true));
             Menu.AddToMainMenu();
 
             Game.PrintChat("Singed exploit by Snorflake loaded!");
@@ -67,6 +68,9 @@ namespace SFSeries
             if (!Menu.Item("enabled").GetValue<KeyBind>().Active) return;
             if (Q.IsReady())
                 Q.Cast(ObjectManager.Player, true);
+            if (!Menu.Item("spam").GetValue<bool>()) return;
+            Packet.C2S.Emote.Encoded(new Packet.C2S.Emote.Struct(2)).Send();
+            Packet.C2S.Move.Encoded(new Packet.C2S.Move.Struct(Game.CursorPos.X, Game.CursorPos.Y)).Send();
         }
     }
 }
