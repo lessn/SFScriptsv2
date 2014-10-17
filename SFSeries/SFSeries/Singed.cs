@@ -17,14 +17,18 @@ namespace SFSeries
         static void Game_OnGameLoad()
         {
             Q = new Spell(SpellSlot.Q);
-            W = new Spell(SpellSlot.W, 600);
-            E = new Spell(SpellSlot.E, 250);
-            W.SetSkillshot(0.5f,300f,int.MaxValue,false,SkillshotType.SkillshotCircle);
+            W = new Spell(SpellSlot.W, 1000);
+            E = new Spell(SpellSlot.E, 125);
+            W.SetSkillshot(0.5f,450f,700f,false,SkillshotType.SkillshotCircle);
             Menu = new Menu("SF Series", "menu", true);
 
             var orbwalkerMenu = new Menu("Orbwalker", "orbwalker");
             Orbwalker = new Orbwalking.Orbwalker(orbwalkerMenu);
             Menu.AddSubMenu(orbwalkerMenu);
+            var comboMenu = new Menu("Combo", "combo");
+            comboMenu.AddItem(new MenuItem("useW", "Use W").SetValue(true));
+            comboMenu.AddItem(new MenuItem("useE", "Use E").SetValue(true));
+            Menu.AddSubMenu(comboMenu);
             Menu.AddItem(
                 new MenuItem("enabled", "Invisible Poison").SetValue(new KeyBind("T".ToCharArray()[0],
                     KeyBindType.Toggle)));
@@ -47,12 +51,14 @@ namespace SFSeries
 
         private static void Combo()
         {
+            var useW = Menu.Item("useW").GetValue<bool>();
+            var useE = Menu.Item("useE").GetValue<bool>();
             var target = SimpleTs.GetTarget(W.Range, SimpleTs.DamageType.Magical);
             if (target == null) return;
 
-            if (W.IsReady() && ObjectManager.Player.Distance(target) < W.Range + target.BoundingRadius)
+            if (W.IsReady() && ObjectManager.Player.Distance(target) < W.Range + target.BoundingRadius && useW)
                 W.Cast(target);
-            if (E.IsReady() && ObjectManager.Player.Distance(target) < E.Range)
+            if (E.IsReady() && ObjectManager.Player.Distance(target) < E.Range && useE)
                 E.Cast(target, true);
         }
 
