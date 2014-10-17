@@ -30,7 +30,9 @@ namespace SFSeries
                 case "Kennen": // Currently disabled, not finished yet
                     new Kennen();
                     break;
-
+                case "Singed":
+                    new Singed();
+                    break;
                 
                 default:
                     Game.PrintChat("This champion is not supported by SFSeries");
