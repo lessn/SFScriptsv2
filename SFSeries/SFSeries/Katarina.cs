@@ -73,7 +73,7 @@ namespace SFSeries
             R = new Spell(SpellSlot.R, 550);
 
             Dfg = new Items.Item(3128, 750f);
-            PrintFancy("Loaded!");
+            Program.PrintMessage("Loaded!");
             SpellList.Add(Q);
             SpellList.Add(W);
             SpellList.Add(E);
@@ -116,8 +116,8 @@ namespace SFSeries
 
             // Misc
             Config.AddSubMenu(new Menu("Misc", "Misc"));
-            Config.SubMenu("Misc").AddItem(new MenuItem("KillstealQ", "Killsteal with Q").SetValue(true));
-            Config.SubMenu("Misc").AddItem(new MenuItem("KillstealE", "Killsteal with E").SetValue(true));
+            Config.SubMenu("Misc").AddItem(new MenuItem("smartKS", "SMART KS").SetValue(true));
+            Config.SubMenu("Misc").AddItem(new MenuItem("wardKs", "WARD JUMP KS").SetValue(true));
             Config.SubMenu("Misc").AddItem(new MenuItem("Escape", "Escape").SetValue(new KeyBind("G".ToCharArray()[0], KeyBindType.Press)));
             Config.SubMenu("Misc").AddItem(new MenuItem("UltCancel", "Ult Cancel(EXPERIMENTAL)").SetValue(true));
             Config.SubMenu("Misc").AddItem(new MenuItem("AlwaysW", "Auto W").SetValue(true));
@@ -202,8 +202,6 @@ namespace SFSeries
                 LXOrbwalker.SetAttack(true);
             }
             if(IsChanneling) return;
-            var useQks = Config.Item("KillstealQ").GetValue<bool>() && Q.IsReady();
-            var useEks = Config.Item("KillstealE").GetValue<bool>() && E.IsReady();
             var useWa = Config.Item("AlwaysW").GetValue<bool>() && W.IsReady();
             switch (LXOrbwalker.CurrentMode)
             {
@@ -223,24 +221,13 @@ namespace SFSeries
             Escape();
             if(useWa)
             AlwaysW();
-            if(useQks)
-                Killsteal();
-            if (useEks)
-               KillstealE();
+            SmartKs();
 
         }
 
         private static void IssueMoveComand()
         {
             _player.IssueOrder(GameObjectOrder.MoveTo, _player.Position);
-        }
-
-        private static void KillstealE()
-        {
-            foreach (var player in (from player in ObjectManager.Get<Obj_AI_Hero>() where !player.IsMe where player.IsValidTarget(E.Range) where _player.GetSpellDamage(player, SpellSlot.E) > player.Health select player).Where(player => E.IsReady()))
-            {
-                E.CastOnUnit(player, Config.Item("QNFE").GetValue<bool>());
-            }
         }
 
         private static void AlwaysW()
@@ -362,13 +349,6 @@ namespace SFSeries
         #endregion
 
         #region Killsteal
-        private static void Killsteal() // Creds to TC-Crew
-        {
-            foreach (var hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero => hero.IsValidTarget(Q.Range)).Where(hero => Q.IsReady() && hero.Distance(ObjectManager.Player) <= Q.Range && _player.GetSpellDamage(hero, SpellSlot.Q) >= hero.Health))
-            {
-                Q.CastOnUnit(hero, Config.Item("QNFE").GetValue<bool>());
-            }
-        }
 
         #endregion
 
@@ -459,10 +439,170 @@ namespace SFSeries
                 ObjectManager.Get<Obj_AI_Hero>().Count(
                     hero => hero.IsEnemy && !hero.IsDead && hero.IsValid && hero.Distance(pos) <= range);
         }
-        public static void PrintFancy(string msg) // Credits to ChewyMoon, and his Brain.exe
+        /*
+         * HUGE CREDITS TO xSalice I STOLE THIS FROM HIM AND ITS INCREDIBLE
+         * THIS IS ALL HIS WORK NAD YOU SHOULD CREDIT HIM FOR THIS
+         * 
+         * 
+         * 
+         */
+        public static void SmartKs()
         {
-            Game.PrintChat("<font color=\"#6699ff\"><b>SFSeries: </b></font> <font color=\"#FFFFFF\">" + msg + "</font>");
+            if (!Config.Item("smartKS").GetValue<bool>())
+                return;
+
+            var nearChamps = (from champ in ObjectManager.Get<Obj_AI_Hero>() where _player.Distance(champ.ServerPosition) <= 1375 && champ.IsEnemy select champ).ToList();
+// ReSharper disable once ReturnValueOfPureMethodIsNotUsed
+            nearChamps.OrderBy(x => x.Health);
+            var packets = Config.Item("QNFE").GetValue<bool>();
+            foreach (var target in nearChamps.Where(target => target != null && !target.IsDead))
+            {
+                //dfg
+                if (Dfg.IsReady() && _player.GetItemDamage(target, Damage.DamageItems.Dfg) > target.Health + 20 && _player.Distance(target.ServerPosition) <= 750)
+                {
+                    Dfg.Cast(target);
+                    //Game.PrintChat("ks 1");
+                    return;
+                }
+
+                //dfg + q
+                if (_player.Distance(target.ServerPosition) <= Q.Range &&
+                    (_player.GetItemDamage(target, Damage.DamageItems.Dfg) + (_player.GetSpellDamage(target, SpellSlot.Q)) * 1.2) > target.Health + 20)
+                {
+                    if (Dfg.IsReady() && Q.IsReady())
+                    {
+                        Dfg.Cast(target);
+
+                        Q.Cast(target, packets);
+                        //Game.PrintChat("ks 2");
+                        return;
+                    }
+                }
+
+                //dfg + q
+                if (_player.Distance(target.ServerPosition) <= E.Range &&
+                    (_player.GetItemDamage(target, Damage.DamageItems.Dfg) + (_player.GetSpellDamage(target, SpellSlot.E)) * 1.2) > target.Health + 20)
+                {
+                    if (Dfg.IsReady() && Q.IsReady())
+                    {
+                        Dfg.Cast(target);
+
+                        E.Cast(target, packets);
+                        //Game.PrintChat("ks 3");
+                        return;
+                    }
+                }
+
+                //E + W
+                if (_player.Distance(target.ServerPosition) <= E.Range && (_player.GetSpellDamage(target, SpellSlot.E) + _player.GetSpellDamage(target, SpellSlot.W)) > target.Health + 20)
+                {
+                    if (E.IsReady() && W.IsReady())
+                    {
+
+                        E.Cast(target, packets);
+                        W.Cast();
+                        //Game.PrintChat("ks 5");
+                        return;
+                    }
+                }
+
+                //E + Q
+                if (_player.Distance(target.ServerPosition) <= E.Range && (_player.GetSpellDamage(target, SpellSlot.E) + _player.GetSpellDamage(target, SpellSlot.Q)) > target.Health + 20)
+                {
+                    if (E.IsReady() && Q.IsReady())
+                    {
+
+                        E.Cast(target, packets);
+                        Q.Cast(target, packets);
+                        //Game.PrintChat("ks 6");
+                        return;
+                    }
+                }
+
+                //Q
+                if ((_player.GetSpellDamage(target, SpellSlot.Q)) > target.Health + 20)
+                {
+                    if (Q.IsReady() && _player.Distance(target.ServerPosition) <= Q.Range)
+                    {
+
+                        Q.Cast(target, packets);
+                        //Game.PrintChat("ks 7");
+                        return;
+                    }
+                    if (Q.IsReady() && E.IsReady() && _player.Distance(target.ServerPosition) <= 1375 && Config.Item("wardKs").GetValue<bool>() && CountEnemiesNearPosition(target.ServerPosition, 500) < 3)
+                    {
+
+                        JumpKs(target);
+                        //Game.PrintChat("wardKS!!!!!");
+                        return;
+                    }
+                }
+
+                //E
+                if (_player.Distance(target.ServerPosition) <= E.Range && (_player.GetSpellDamage(target, SpellSlot.E)) > target.Health + 20)
+                {
+                    if (E.IsReady())
+                    {
+
+                        E.Cast(target, packets);
+                        //Game.PrintChat("ks 8");
+                        return;
+                    }
+                }
+
+            }
         }
+        public static void JumpKs(Obj_AI_Hero target)
+        {
+
+            var packets = Config.Item("QNFE").GetValue<bool>();
+            foreach (Obj_AI_Minion ward in ObjectManager.Get<Obj_AI_Minion>().Where(ward =>
+                E.IsReady() && Q.IsReady() && ward.Name.ToLower().Contains("ward") && ward.Distance(target.ServerPosition) < Q.Range && ward.Distance(_player) < E.Range))
+            {
+                E.Cast(ward);
+                return;
+            }
+
+            foreach (Obj_AI_Hero hero in ObjectManager.Get<Obj_AI_Hero>().Where(hero =>
+                E.IsReady() && Q.IsReady() && hero.Distance(target.ServerPosition) < Q.Range && hero.Distance(_player) < E.Range))
+            {
+                E.Cast(hero);
+                return;
+            }
+
+            foreach (Obj_AI_Minion minion in ObjectManager.Get<Obj_AI_Minion>().Where(minion =>
+                E.IsReady() && Q.IsReady() && minion.Distance(target.ServerPosition) < Q.Range && minion.Distance(_player) < E.Range))
+            {
+                E.Cast(minion);
+                return;
+            }
+
+            if (_player.Distance(target) < Q.Range)
+            {
+                Q.Cast(target, packets);
+                return;
+            }
+
+            if (E.IsReady() && Q.IsReady())
+            {
+                Vector3 position = _player.ServerPosition + Vector3.Normalize(target.ServerPosition - _player.ServerPosition) * 590;
+
+                if (target.Distance(position) < Q.Range)
+                {
+                    InventorySlot invSlot = FindBestWardItem();
+                    if (invSlot == null) return;
+
+                    invSlot.UseItem(position);
+                }
+            }
+
+            if (_player.Distance(target) < Q.Range)
+            {
+                Q.Cast(target, packets);
+            }
+
+        }
+
     }
 }
         #endregion
