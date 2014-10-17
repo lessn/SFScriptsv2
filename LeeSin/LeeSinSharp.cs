@@ -110,6 +110,7 @@ namespace LeeSinSharp
             if (Config.Item("ActiveWard").GetValue<KeyBind>().Active)
             {
                 LeeSin.wardJump(Game.CursorPos.To2D());
+                ObjectManager.Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
             }
 
             if (Config.Item("ActiveHarass").GetValue<KeyBind>().Active)
@@ -125,11 +126,12 @@ namespace LeeSinSharp
             if (Config.Item("ActiveCombo1").GetValue<KeyBind>().Active)
             {
                 LeeSin.combo2();
-
+                ObjectManager.Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
             }
             if (Config.Item("ActiveInsec").GetValue<KeyBind>().Active)
             {
                 LeeSin.useinsec();
+                ObjectManager.Player.IssueOrder(GameObjectOrder.MoveTo, Game.CursorPos);
             }
 
             if (LeeSin.orbwalker.ActiveMode.ToString() == "LaneClear")
