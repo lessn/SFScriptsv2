@@ -404,6 +404,7 @@ namespace LeeSinSharp
         {
             Obj_AI_Hero hero = ObjectManager.Get<Obj_AI_Hero>().Where(tur => tur.IsAlly && tur.Health > 0 && !tur.IsMe).OrderBy(tur => tur.Distance(Player.ServerPosition)).First();
             return target.Position + Vector3.Normalize(hero.Position - target.Position) * (600);
+            var delay = E.Delay;
         }
 
       }
