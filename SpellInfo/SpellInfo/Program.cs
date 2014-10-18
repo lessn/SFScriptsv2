@@ -8,6 +8,7 @@ namespace SpellInfo
     {
         private static Menu _menu;
         public static Spell Q, W, E, R;
+        public static bool delayed;
         static void Main(string[] args)
         {
             CustomEvents.Game.OnGameLoad += Game_OnGameLoad;
@@ -32,25 +33,53 @@ namespace SpellInfo
 
         static void Game_OnGameUpdate(EventArgs args)
         {
+
             if (_menu.Item("Q").GetValue<KeyBind>().Active)
             {
-                Game.PrintChat("Q Info:");
-                Game.PrintChat("Delay: " + Q.Instance.SData.SpellCastTime + " Width: " + Q.Instance.SData.LineWidth + " Speed: " + Q.Instance.SData.MissileSpeed);
+                if (!delayed)
+                {
+                    delayed = true;
+                    Game.PrintChat("Q Info:");
+                    Game.PrintChat("Delay: " + Q.Instance.SData.SpellCastTime + " Width: " + Q.Instance.SData.LineWidth +
+                                   " Speed: " + Q.Instance.SData.MissileSpeed);
+                    Utility.DelayAction.Add(3000, () => delayed = false);
+                }
             }
             if (_menu.Item("W").GetValue<KeyBind>().Active)
             {
-                Game.PrintChat("W Info:");
-                Game.PrintChat("Delay: " + W.Instance.SData.SpellCastTime + " Width: " + W.Instance.SData.LineWidth + " Speed: " + W.Instance.SData.MissileSpeed);
+                if (!delayed)
+                {
+                    delayed = true;
+                    Game.PrintChat("W Info:");
+                    Game.PrintChat("Delay: " + W.Instance.SData.SpellCastTime + " Width: " + W.Instance.SData.LineWidth +
+                                   " Speed: " + W.Instance.SData.MissileSpeed);
+
+                    Utility.DelayAction.Add(3000, () => delayed = false);
+                }
             }
             if (_menu.Item("E").GetValue<KeyBind>().Active)
             {
-                Game.PrintChat("E Info:");
-                Game.PrintChat("Delay: " + E.Instance.SData.SpellCastTime + " Width: " + E.Instance.SData.LineWidth + " Speed: " + E.Instance.SData.MissileSpeed);
+                if (!delayed)
+                {
+                    delayed = true;
+                    Game.PrintChat("E Info:");
+                    Game.PrintChat("Delay: " + E.Instance.SData.SpellCastTime + " Width: " + E.Instance.SData.LineWidth +
+                                   " Speed: " + E.Instance.SData.MissileSpeed);
+
+                    Utility.DelayAction.Add(3000, () => delayed = false);
+                }
             }
             if (_menu.Item("R").GetValue<KeyBind>().Active)
             {
-                Game.PrintChat("R Info:");
-                Game.PrintChat("Delay: " + R.Instance.SData.SpellCastTime + " Width: " + R.Instance.SData.LineWidth + " Speed: " + R.Instance.SData.MissileSpeed);
+                if (!delayed)
+                {
+                    delayed = true;
+                    Game.PrintChat("R Info:");
+                    Game.PrintChat("Delay: " + R.Instance.SData.SpellCastTime + " Width: " + R.Instance.SData.LineWidth +
+                                   " Speed: " + R.Instance.SData.MissileSpeed);
+
+                    Utility.DelayAction.Add(3000, () => delayed = false);
+                }
             }
         }
     }
