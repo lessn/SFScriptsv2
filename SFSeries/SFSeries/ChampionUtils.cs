@@ -55,7 +55,7 @@ namespace SFSeries
         private void SendSimplePing()
         {
             Packet.S2C.Ping.Encoded(new Packet.S2C.Ping.Struct(_pingLocation.X, _pingLocation.Y, 0, 0,
-                Packet.PingType.FallbackSound)).Process();
+                Packet.PingType.Fallback)).Process();
         }
 
         /// <summary>
